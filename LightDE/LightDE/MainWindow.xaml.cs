@@ -17,8 +17,6 @@
  */
 using System;
 using System.Collections.Generic;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -34,6 +32,7 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
+
 using System.Runtime.InteropServices;
 using DE.WindowManagement;
 
@@ -47,6 +46,8 @@ namespace LightDE
     [System.Serializable()]
     public partial class MainWindow : MetroWindow
     {
+        private NotifyIconManager notifyiconmanager; // keep alive callbacks
+
         AppsListing AppManager = new AppsListing();
         public PanelPos PanelPosition = PanelPos.Top;
         public int PanelHeight = 30;
@@ -59,9 +60,7 @@ namespace LightDE
             AppManager.GetItems();
             GetApps();
             WindowManager wm = new WindowManager(AddNewTaskItem);
-            NotifyIconManager m = new NotifyIconManager();
-            m.DoStuff();
-            Parallel.ForEach<NOTIFYITEMICON>(m.Programs, x => Dispatcher.Invoke(() => NotifyiconHolder.Children.Add(new TrayIcon(x))));
+            notifyiconmanager = new NotifyIconManager(AddNewNotification);
 
         }
         [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
@@ -86,6 +85,17 @@ namespace LightDE
                 finally { DeleteObject(handle); }
                 g.Destroy = () => { Application.Current.Dispatcher.Invoke(() => ProcMenu.Items.Remove(ProcMenu.Items.Cast<MenuItem>().Where(x => x.Tag == s.Tag).First())); };
                 ProcMenu.Items.Add(s);
+            });
+            return g;
+        }
+
+        private GUIItem AddNewNotification(NOTIFYITEMICON icon)
+        {
+            var g = new GUIItem();
+            Application.Current.Dispatcher.Invoke(() => {
+                var obj = new TrayIcon(icon);
+                NotifyiconHolder.Children.Add(obj);
+                g.Destroy = () => { Application.Current.Dispatcher.Invoke(() => NotifyiconHolder.Children.Remove(obj)); };
             });
             return g;
         }

@@ -55,9 +55,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DETaskBar">
-      <HintPath>bin\Debug\DETaskBar.dll</HintPath>
-    </Reference>
     <Reference Include="MahApps.Metro, Version=1.4.3.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.4.3\lib\net45\MahApps.Metro.dll</HintPath>
       <Private>True</Private>
@@ -83,9 +80,8 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WindowManagement, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Documents\GitHub\DEWindowManagement\bin\Debug\WindowManagement.dll</HintPath>
+    <Reference Include="WindowManagement">
+      <HintPath>..\..\..\DEWindowManagement\bin\Debug\WindowManagement.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -183,10 +179,16 @@
     <Resource Include="Resources\Entypo-license.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Cairo.WindowsHooks.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="ITrayNotify.h" />
-    <Content Include="TrayNotificationManagement.dll" />
-    <Content Include="TrayNotificationManagementWin8.dll" />
-    <Content Include="TrayNotify.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\cairoshell\code\Cairo Desktop\Cairo.WindowsHooksWrapper\Cairo.WindowsHooksWrapper.csproj">
+      <Project>{79b5ddac-5102-4b11-bfa1-b16d6f6fe661}</Project>
+      <Name>Cairo.WindowsHooksWrapper</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

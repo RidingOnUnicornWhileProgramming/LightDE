@@ -26,12 +26,12 @@ namespace LightDE
             InitializeComponent();
             thisIcon = s;
             Icon.Source = s.image;
-
+            Icon.Height = 16;
         }
 
         private void Icon_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            SpaceReserver.ShowWindow((IntPtr)int.Parse(thisIcon.hWnd), SpaceReserver.WindowShowStyle.Show);
+            SpaceReserver.ShowWindow(thisIcon.hWnd, SpaceReserver.WindowShowStyle.Show);
         }
     }
 }
