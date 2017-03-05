@@ -13,51 +13,61 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LightDE.WindowManagement;
-using System.Threading;
 
 namespace LightDE
 {
     /// <summary>
-    /// Interaction logic for thisIcon.xaml
+    /// Interaction logic for TrayIcon.xaml
     /// </summary>
     public partial class TrayIcon : UserControl
     {
-
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
-        uint WM_LBUTTONUP = 0x202;
-        uint WM_LBUTTONDBLCLK = 0x203;
-        uint WM_RBUTTONUP = 0x205;
-        uint WM_RBUTTONDBLCLK = 0x206;
         NOTIFYITEMICON thisIcon;
+        private DateTime _lastRClick;
+        private DateTime _lastLClick;
+
         public TrayIcon(NOTIFYITEMICON s)
         {
             InitializeComponent();
             thisIcon = s;
             Icon.Source = s.image;
-            Icon.MouseLeftButtonUp += Icon_MouseLeftButtonUp;
+            Icon.Height = 16;
         }
-
-        private void Icon_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        [DllImport("user32.dll")]
+        private static extern bool PostMessage(IntPtr hWnd, uint callback, uint wParam, uint lParam);
+        private void Icon_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            WINAPI.ShowWindow((IntPtr)int.Parse(thisIcon.hWnd), 1);
-        }
+            uint WM_LBUTTONUP = 0x202;
+            uint WM_LBUTTONDBLCLK = 0x203;
+            uint WM_RBUTTONUP = 0x205;
+            uint WM_RBUTTONDBLCLK = 0x206;
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern int GetWindowTextLength(HandleRef hWnd);
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern int GetWindowText(HandleRef hWnd, StringBuilder lpString, int nMaxCount);
-        private void Icon_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            Console.WriteLine(thisIcon.hWnd);
-            Console.WriteLine(NotifyIconManager.PostMessage((IntPtr)int.Parse(thisIcon.hWnd), thisIcon.original.uCallbackMessage, thisIcon.uID, WM_RBUTTONDBLCLK));
-            Thread.Sleep(500);
-            Console.WriteLine(NotifyIconManager.PostMessage((IntPtr)int.Parse(thisIcon.hWnd), thisIcon.original.uCallbackMessage, thisIcon.uID, 0x205));
-        }
+
+            if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
+            {
+                if (DateTime.Now.Subtract(_lastLClick).TotalSeconds < 1)
+                {
+                    PostMessage(thisIcon.original.hWnd, thisIcon.original.uCallbackMessage, thisIcon.UID, WM_LBUTTONDBLCLK);
+                }
+                else
+                {
+                    PostMessage(thisIcon.hWnd, thisIcon.original.uCallbackMessage, thisIcon.UID, WM_LBUTTONUP);
+                }
+                _lastLClick = DateTime.Now;
+            }
+            else if (e.ChangedButton == System.Windows.Input.MouseButton.Right)
+            {
+                if (DateTime.Now.Subtract(_lastRClick).TotalSeconds < 1)
+                {
+                    PostMessage(thisIcon.hWnd, thisIcon.original.uCallbackMessage, thisIcon.UID, WM_RBUTTONDBLCLK);
+                }
+                else
+                {
+                    PostMessage(thisIcon.hWnd, thisIcon.original.uCallbackMessage, thisIcon.UID, WM_RBUTTONUP);
+                }
+                _lastRClick = DateTime.Now;
+            }
+
+            Console.WriteLine("Mouse up (" + e.ChangedButton.ToString() + ") on trayicon " + thisIcon.Title);
+    }
     }
 }

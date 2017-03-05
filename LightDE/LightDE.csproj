@@ -58,8 +58,16 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DETaskBar">
-      <HintPath>..\..\..\OneDrive\Dokumenty\GitHub\DE-TaskBar\DE-TaskBar\DE-TaskBar\bin\Debug\DETaskBar.dll</HintPath>
+    <Reference Include="AudioSwitcher.AudioApi, Version=3.0.0.209, Culture=neutral, PublicKeyToken=fda5729e2db3a64f, processorArchitecture=MSIL">
+      <HintPath>..\packages\AudioSwitcher.AudioApi.3.0.0\lib\net40\AudioSwitcher.AudioApi.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AudioSwitcher.AudioApi.CoreAudio, Version=3.0.0.209, Culture=neutral, PublicKeyToken=fda5729e2db3a64f, processorArchitecture=MSIL">
+      <HintPath>..\packages\AudioSwitcher.AudioApi.CoreAudio.3.0.0.1\lib\net40\AudioSwitcher.AudioApi.CoreAudio.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Cairo.WindowsHooksWrapper">
+      <HintPath>.\Cairo.WindowsHooksWrapper.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro, Version=1.4.3.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.4.3\lib\net45\MahApps.Metro.dll</HintPath>
@@ -86,6 +94,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WindowManagement">
+      <HintPath>..\..\DE-TaskBar\DE-TaskBar\DE-TaskBar\bin\Debug\WindowManagement.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -95,10 +106,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="appIcon.xaml.cs">
+      <DependentUpon>appIcon.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AppListing.cs" />
-    <Compile Include="IconUtils\IconExtractor.cs" />
-    <Compile Include="IconUtils\IconUtil.cs" />
-    <Compile Include="IconUtils\NativeMethods.cs" />
+    <Compile Include="NotifyIconManager.cs" />
     <Compile Include="Search.xaml.cs">
       <DependentUpon>Search.xaml</DependentUpon>
     </Compile>
@@ -106,9 +118,10 @@
     <Compile Include="TrayIcon.xaml.cs">
       <DependentUpon>TrayIcon.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UnmanagedWrapper.cs" />
-    <Compile Include="WINAPI.cs" />
-    <Compile Include="WindowManager.cs" />
+    <Page Include="appIcon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -180,12 +193,24 @@
     <Resource Include="Resources\Entypo-license.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TrayNotificationManagement.dll">
+    <Content Include="Cairo.WindowsHooks.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="TrayNotificationManagementWin8.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="ITrayNotify.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="WMPLib">
+      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

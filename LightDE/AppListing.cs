@@ -29,7 +29,6 @@ namespace LightDE
                        
                     });
                 });
-                
                 Parallel.ForEach<string>(Directory.GetDirectories(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs"), dd =>
                 {
                     Parallel.ForEach<string>(Directory.GetFiles(dd), ff =>

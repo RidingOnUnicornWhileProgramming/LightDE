@@ -97,36 +97,34 @@ namespace LightDE
                         {
                         }
                         break;
+                        /* TODO Maybe Try to add func modify cur Notification?
+                 case NIM.NIM_MODIFY:
+                     try
+                     {
 
-                    case NIM.NIM_MODIFY:
-                        /* TODO IMPLEMENT
-                        try
-                        {
-                            
-                            bool exists = false;
-                            if (TrayIcons.Contains(trayIcon))
-                            {
-                                exists = true;
-                                trayIcon = TrayIcons.Single(i => i.HWnd == nicData.hWnd && i.UID == nicData.uID);
-                            }
+                         bool exists = false;
+                         if (destructors.ContainsKey(nicData.uID))
+                         {
+                             exists = true;
+                             trayIcon = destructors.Single(i => i.Key == nicData.uID) as NOTIFYITEMICON;
+                         }
 
-                            trayIcon.Title = nicData.szTip;
-                            trayIcon.Icon = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(nicData.hIcon, Int32Rect.Empty, System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
-                            trayIcon.HWnd = nicData.hWnd;
-                            trayIcon.UID = nicData.uID;
-                            trayIcon.CallbackMessage = nicData.uCallbackMessage;
+                         trayIcon.Title = nicData.szTip;
+                         trayIcon.image = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(nicData.hIcon, Int32Rect.Empty, System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+                         trayIcon.hWnd = nicData.hWnd;
+                         trayIcon.UID = nicData.uID;
 
-                            if (!exists)
-                            {
-                                TrayIcons.Add(trayIcon);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Trace.WriteLine("Unable to modify the icon in the collection. Error: " + ex.ToString());
-                        }
-                        */
-                        break;
+                         if (!exists)
+                         {
+                             destructors.Add(nicData.uID, addNewNotification(trayIcon));
+                         }
+                     }
+                     catch (Exception ex)
+                     {
+                         Console.WriteLine("Unable to modify the icon in the collection. Error: " + ex.ToString());
+                     }
+                     break;
+                     */
                 }
             }
             return true;

@@ -17,8 +17,6 @@
  */
 using System;
 using System.Collections.Generic;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -35,7 +33,10 @@ using System.Diagnostics;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Runtime.InteropServices;
-using LightDE.WindowManagement;
+using DE.WindowManagement;
+using System.Timers;
+using AudioSwitcher.AudioApi.CoreAudio;
+using WMPLib;
 
 namespace LightDE
 {
@@ -47,10 +48,15 @@ namespace LightDE
     [System.Serializable()]
     public partial class MainWindow : MetroWindow
     {
+        private NotifyIconManager notifyiconmanager; // keep alive callbacks
+        CoreAudioDevice defaultPlaybackDevice = new CoreAudioController().DefaultPlaybackDevice;
+        public IWMPMedia currentMedia { get; set; }
+
         AppsListing AppManager = new AppsListing();
         public PanelPos PanelPosition = PanelPos.Top;
         public int PanelHeight = 30;
         public int PanelWidth = (int)System.Windows.SystemParameters.PrimaryScreenWidth;
+        public System.Timers.Timer ClockTimer = new System.Timers.Timer(1000);
         public MainWindow()
         {
             this.Show();
@@ -58,14 +64,13 @@ namespace LightDE
             SetPanelPos(PanelPosition);
             AppManager.GetItems();
             GetApps();
+            Clock.Content = DateTime.Now.ToString("dddd, dd.MM.yyyy HH:mm:ss");
+                
+            ClockTimer.Elapsed += (object sender, ElapsedEventArgs e) => { Dispatcher.Invoke(() => Clock.Content = DateTime.Now.ToString("dddd, dd.MM.yyyy HH:mm:ss")); };
+            ClockTimer.Start();
             WindowManager wm = new WindowManager(AddNewTaskItem);
-            NotifyIconManager man = new NotifyIconManager();
-            man.DoStuff();
-            foreach (NOTIFYITEMICON n in man.Programs)
-            {
-                Console.WriteLine(n.pszExeName);
-                TrayHolder.Children.Add(new TrayIcon(n));
-            }
+            notifyiconmanager = new NotifyIconManager(AddNewNotification);
+
         }
         [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -87,19 +92,30 @@ namespace LightDE
                     s.Icon = m;
                 }
                 finally { DeleteObject(handle); }
+                g.Destroy = () => { Application.Current.Dispatcher.Invoke(() => ProcMenu.Items.Remove(ProcMenu.Items.Cast<MenuItem>().Where(x => x.Tag == s.Tag).First())); };
                 ProcMenu.Items.Add(s);
             });
-            g.Destroy = () => Dispatcher.Invoke(() =>  ProcMenu.Items.Remove(ProcMenu.Items.Cast<MenuItem>().Where(x => x.Tag.ToString() == window.Ptr.ToString()).First()));
+            return g;
+        }
+
+        private GUIItem AddNewNotification(NOTIFYITEMICON icon)
+        {
+            var g = new GUIItem();
+            Application.Current.Dispatcher.Invoke(() => {
+                var obj = new TrayIcon(icon);
+                NotifyiconHolder.Children.Add(obj);
+                g.Destroy = () => { Application.Current.Dispatcher.Invoke(() => NotifyiconHolder.Children.Remove(obj)); };
+            });
             return g;
         }
 
         private void Window_TitleChanged(object sender, EventArgs e)
         {
-            for(int i =0; i<ProcMenu.Items.Count; i++) 
+            for (int i = 0; i < ProcMenu.Items.Count; i++)
             {
-                var x = ProcMenu.Items[i] as MenuItem;
-                Dispatcher.Invoke(() => x.Header = GetTitle(int.Parse(x.Tag.ToString())));
-            } 
+                var p = ProcMenu.Items[i] as MenuItem;
+                Dispatcher.Invoke(() => p.Header = GetTitle(int.Parse(p.Tag.ToString())));
+            }
         }
         [DllImport("user32.dll")]
         private static extern int GetWindowText(int hWnd, StringBuilder title, int size);
@@ -120,24 +136,32 @@ namespace LightDE
             this.Width = PanelWidth;
             this.Height = PanelHeight;
         }
+
         async void GetApps()
         {
             await Task.Factory.StartNew(() =>
            {
               Parallel.ForEach<xApp>(AppManager.GetItems(), item => Dispatcher.Invoke(() =>
               {
-                  MenuItem s = new MenuItem();
-                  s.Click += (object sender, RoutedEventArgs e) => { Process.Start(item.Path); };
-                  s.Header = item.name;
-                  Image m = new Image();
-                  var handle = item.icon.GetHbitmap();
                   try
                   {
-                      m.Source = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                      s.Icon = m;
+                      MenuItem s = new MenuItem();
+                      s.Click += (object sender, RoutedEventArgs e) => { Process.Start(item.Path); };
+                      s.Header = item.name;
+                      Image m = new Image();
+                      var handle = item.icon.GetHbitmap();
+                      try
+                      {
+                          m.Source = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                          s.Icon = m;
+                      }
+                      finally { DeleteObject(handle); }
+                      menu.Items.Add(s);
                   }
-                  finally { DeleteObject(handle); }
-                  menu.Items.Add(s);
+                  catch
+                  {
+                      MessageBox.Show("Unable to run item! Make sure the path is correct");
+                  }
               }));
            });
         }
@@ -177,6 +201,49 @@ namespace LightDE
         {
             Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
 
+        }
+
+        private void Clock_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void Volume_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Thread p = new Thread(new ThreadStart(() =>
+            {
+                defaultPlaybackDevice.Volume = e.NewValue;
+            }));
+            p.Start();
+        }
+        [DllImport("user32.dll")]
+        public static extern void keybd_event(byte virtualKey, byte scanCode, uint flags, IntPtr extraInfo);
+        public const int KEYEVENTF_EXTENTEDKEY = 1;
+        public const int KEYEVENTF_KEYUP = 0;
+        public const int VK_MEDIA_NEXT_TRACK = 0xB0;// code to jump to next track
+        public const int VK_MEDIA_PLAY_PAUSE = 0xB3;// code to play or pause a song
+        public const int VK_MEDIA_PREV_TRACK = 0xB1;// code to jump to prev track
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        static extern IntPtr SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);
+        private void Volume_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            
+        }
+        //Currently doesn't work, I must find another way...
+        private void BackWard(object sender, RoutedEventArgs e)
+        {
+            SendMessage(Process.GetCurrentProcess().MainWindowHandle, 0x319, (IntPtr)11, (IntPtr)11);
+            Console.WriteLine("Back");
+        }
+
+        private void PlayPause(object sender, RoutedEventArgs e)
+        {
+            SendMessage(Process.GetCurrentProcess().MainWindowHandle, 0x319, (IntPtr)14, (IntPtr)14);
+        }
+
+        private void Forward(object sender, RoutedEventArgs e)
+        {
+            SendMessage(Process.GetCurrentProcess().MainWindowHandle, 0x319, (IntPtr)12, (IntPtr)12);
         }
     }
     public enum PanelPos
