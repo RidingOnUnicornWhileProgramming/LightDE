@@ -95,7 +95,7 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="WindowManagement">
-      <HintPath>..\..\DE-TaskBar\DE-TaskBar\DE-TaskBar\bin\Debug\WindowManagement.dll</HintPath>
+      <HintPath>..\..\GitHub\DEWindowManagement\bin\Debug\WindowManagement.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -110,6 +110,9 @@
       <DependentUpon>appIcon.xaml</DependentUpon>
     </Compile>
     <Compile Include="AppListing.cs" />
+    <Compile Include="Desktop\Desktop.xaml.cs">
+      <DependentUpon>Desktop.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NotifyIconManager.cs" />
     <Compile Include="Search.xaml.cs">
       <DependentUpon>Search.xaml</DependentUpon>
@@ -119,6 +122,10 @@
       <DependentUpon>TrayIcon.xaml</DependentUpon>
     </Compile>
     <Page Include="appIcon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Desktop\Desktop.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -37,7 +37,7 @@ using DE.WindowManagement;
 using System.Timers;
 using AudioSwitcher.AudioApi.CoreAudio;
 using WMPLib;
-
+using LightDE.Desktop;
 namespace LightDE
 {
     /// <summary>
@@ -70,7 +70,8 @@ namespace LightDE
             ClockTimer.Start();
             WindowManager wm = new WindowManager(AddNewTaskItem);
             notifyiconmanager = new NotifyIconManager(AddNewNotification);
-
+            DesktopD D = new DesktopD();
+            D.Show();
         }
         [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -212,7 +213,13 @@ namespace LightDE
         {
             Thread p = new Thread(new ThreadStart(() =>
             {
-                defaultPlaybackDevice.Volume = e.NewValue;
+                try
+                {
+                    defaultPlaybackDevice.Volume = e.NewValue;
+                }
+                catch {
+                    Console.WriteLine("Can't find output devicde!");
+                }
             }));
             p.Start();
         }
