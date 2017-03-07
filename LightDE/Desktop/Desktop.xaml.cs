@@ -13,6 +13,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Reflection;
 
 namespace LightDE.Desktop
 {
@@ -27,6 +28,7 @@ namespace LightDE.Desktop
             InitializeComponent();
             ws = new WindowSinker(this);
             AssignSize();
+            InitializeDesktop();
         }
 
         private void Window_StateChanged(object sender, EventArgs e)
@@ -43,6 +45,15 @@ namespace LightDE.Desktop
             Left = 0;
             ws.Sink();
     }
+        public void InitializeDesktop()
+        {
+            SetWallpaper(System.IO.Directory.GetCurrentDirectory() + "\\Desktop\\Wallpaper.jpg");
+        }
+        public void SetWallpaper(string path)
+        {
+            BitmapImage bm = new BitmapImage(new Uri(path));
+            Background.Background = new ImageBrush(bm);
+        }
     }
     public class WindowSinker
     {

@@ -61,17 +61,17 @@ namespace LightDE
         {
             this.Show();
             InitializeComponent();
-            SetPanelPos(PanelPosition);
-            AppManager.GetItems();
-            GetApps();
             Clock.Content = DateTime.Now.ToString("dddd, dd.MM.yyyy HH:mm:ss");
+            DesktopD D = new DesktopD();
+            D.Show();
+            SetPanelPos(PanelPosition);
+            new Thread(new ThreadStart(GetApps)).Start();
                 
             ClockTimer.Elapsed += (object sender, ElapsedEventArgs e) => { Dispatcher.Invoke(() => Clock.Content = DateTime.Now.ToString("dddd, dd.MM.yyyy HH:mm:ss")); };
             ClockTimer.Start();
             WindowManager wm = new WindowManager(AddNewTaskItem);
             notifyiconmanager = new NotifyIconManager(AddNewNotification);
-            DesktopD D = new DesktopD();
-            D.Show();
+
         }
         [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
         [return: MarshalAs(UnmanagedType.Bool)]
