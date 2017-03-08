@@ -35,7 +35,10 @@ namespace LightDE.Desktop
         {
             AssignSize();
         }
+        public void ShowWelcomeScreen()
+        {
 
+        }
         public void AssignSize()
         {
             WindowState = WindowState.Maximized;
