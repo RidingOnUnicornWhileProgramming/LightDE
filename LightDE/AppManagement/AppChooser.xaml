@@ -1,0 +1,17 @@
+﻿<Window x:Class="LightDE.AppManagement.AppChooser"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LightDE.AppManagement"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+
+        mc:Ignorable="d"
+        Title="AppChooser" Height="300" Width="300">
+    <Grid>
+        <ListBox x:Name="appbox" SelectionMode="Multiple" Margin="31,5,30,32">
+
+        </ListBox>
+        <Button x:Name="button" Content="Save" HorizontalAlignment="Right" Width="75" Height="Auto" Margin="0,237,10,5" Click="button_Click"/>
+    </Grid>
+</Window>

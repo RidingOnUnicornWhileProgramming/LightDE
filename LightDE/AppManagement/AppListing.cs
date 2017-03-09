@@ -11,7 +11,6 @@ namespace LightDE
 {
     public class AppsListing
     {
-
         public List<xApp> GetItems()
         {
             List<xApp> appslist = new List<xApp>();
@@ -29,19 +28,23 @@ namespace LightDE
                        
                     });
                 });
-                Parallel.ForEach<string>(Directory.GetDirectories(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs"), dd =>
+                try
                 {
-                    Parallel.ForEach<string>(Directory.GetFiles(dd), ff =>
+                    Parallel.ForEach<string>(Directory.GetDirectories(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs"), dd =>
                     {
-                        if (!ff.EndsWith(".ini"))
+                        Parallel.ForEach<string>(Directory.GetFiles(dd), ff =>
                         {
-                            if (!appslist.Any(x => x.name == (ExtractIcon.GetName(ff))))
+                            if (!ff.EndsWith(".ini"))
                             {
-                                menuApp.Add(new xApp(ExtractIcon.GetName(ff), System.Drawing.Icon.ExtractAssociatedIcon(ff).ToBitmap(), ff));
+                                if (!appslist.Any(x => x.name == (ExtractIcon.GetName(ff))))
+                                {
+                                    menuApp.Add(new xApp(ExtractIcon.GetName(ff), System.Drawing.Icon.ExtractAssociatedIcon(ff).ToBitmap(), ff));
+                                }
                             }
-                        }
+                        });
                     });
-                });
+                }
+                catch { }
                 appslist.AddRange(menuApp);
                 menuApp = null;
             }
@@ -168,6 +171,7 @@ namespace LightDE
         public string name;
         public Bitmap icon;
         public string Path;
+        public bool seen;
         public xApp(string name, Bitmap icon, string Path)
         {
             this.name = name;

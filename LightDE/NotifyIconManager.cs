@@ -89,9 +89,11 @@ namespace LightDE
                                 // Nothing to remove.
                                 return false;
                             }
-
-                            destructors[nicData.uID].Destroy();
-                            destructors.Remove(nicData.uID);
+                            else
+                            {
+                                destructors[nicData.uID].Destroy();
+                                destructors.Remove(nicData.uID);
+                            }
                         }
                         catch (Exception)
                         {

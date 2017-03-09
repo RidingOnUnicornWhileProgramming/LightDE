@@ -1,0 +1,17 @@
+﻿<Controls:MetroWindow x:Class="LightDE.Config.Settings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LightDE.Config"
+        mc:Ignorable="d"
+        Title="Settings">
+    <Grid>
+        <TabControl x:Name="setControl" ItemsSource="{Binding}" Margin="0,0,0,42">
+
+        </TabControl>
+        <Button x:Name="save" Content="Save" Margin="676,467,10,10" Click="save_Click"/>
+
+    </Grid>
+</Controls:MetroWindow>

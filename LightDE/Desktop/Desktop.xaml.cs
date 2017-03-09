@@ -14,21 +14,42 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Reflection;
+using MahApps.Metro.Controls;
+//using Sloppycode.net;
+using System.Net;
+using System.IO;
+using TNX.RssReader;
+using System.Diagnostics;
+using LightDE.Config;
+using Newtonsoft.Json;
+using System.Threading;
+using GongSolutions.Wpf.DragDrop;
+using System.Collections.ObjectModel;
 
 namespace LightDE.Desktop
 {
     /// <summary>
     /// Interaction logic for Desktop.xaml
     /// </summary>
-    public partial class DesktopD : Window
+    /// 
+    public partial class DesktopD : Window , ISaveable
     {
         WindowSinker ws;
+        bool desktop;
+        public string name
+        {
+            get
+            {
+                return "DesktopD";
+            }
+        }
+
         public DesktopD()
         {
             InitializeComponent();
             ws = new WindowSinker(this);
-            AssignSize();
-            InitializeDesktop();
+            ShowWelcomeScreen();
+            
         }
 
         private void Window_StateChanged(object sender, EventArgs e)
@@ -37,7 +58,14 @@ namespace LightDE.Desktop
         }
         public void ShowWelcomeScreen()
         {
+            new Thread(new ThreadStart(FetchRssFeed)).Start();
+            new Thread(new ThreadStart(GetRecentFiles)).Start();
+            new Thread(new ThreadStart(FillDesktopView)).Start();
 
+            Background.Visibility = Visibility.Hidden;
+            Welcome.Visibility = Visibility.Visible;
+            Welcome.IsEnabled = true;
+            welcomeText.Content = "Welcome, " + Environment.UserName;// System.Security.Principal.WindowsIdentity.GetCurrent().Name.Split(new char[] { '\\' })[1];
         }
         public void AssignSize()
         {
@@ -47,16 +75,174 @@ namespace LightDE.Desktop
             Top = 30;
             Left = 0;
             ws.Sink();
-    }
+        }
+        public void FetchRssFeed()
+        {
+            RssFeed rs;
+            foreach (string l in MainWindow.config.GetVar("DesktopD", "rss") as Newtonsoft.Json.Linq.JArray)
+            {
+
+                rs = RssHelper.ReadFeed(@l);
+                foreach (RssItem r in rs.Items)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        Tile t = new Tile();
+                        t.Title = r.Title;
+                        t.Content = r.Author;
+                        t.Click += (object sender, RoutedEventArgs e) => { Process.Start(r.Link); };
+                        t.Height = news.Height - 15;
+                        news.Width += t.Width;
+                        news.Children.Add(t);
+                    });
+                }
+            }
+        }
+        public void GetRecentFiles()
+        {
+            foreach (string f in Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.Recent)))
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Tile t = new Tile();
+                    var Icon = System.Drawing.Icon.ExtractAssociatedIcon(f);
+                    Rectangle r = new Rectangle();
+                    r.Width = 50;
+                    r.Height = 50;
+                    r.Fill = new ImageBrush(Imaging.CreateBitmapSourceFromHBitmap(Icon.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions()));
+                    t.Content = r;
+                    t.Click += (object sender, RoutedEventArgs e) => { try { Process.Start(f); } catch { } };
+                    t.Title = System.IO.Path.GetFileName(f).Split(new char[] {'.'})[0];
+                    lastused.Width += t.Width;
+                    lastused.Children.Add(t);
+                });
+            }
+        }
+
         public void InitializeDesktop()
         {
-            SetWallpaper(System.IO.Directory.GetCurrentDirectory() + "\\Desktop\\Wallpaper.jpg");
+            Background.Visibility = Visibility.Visible;
+
+             Welcome.Visibility = Visibility.Hidden;
+             Welcome.IsEnabled = false;
+            SetWallpaper();
+            AssignSize();
+
         }
-        public void SetWallpaper(string path)
+        public void FillDesktopView()
         {
-            BitmapImage bm = new BitmapImage(new Uri(path));
+            ObservableCollection<Tile> tiles = new ObservableCollection<Tile>();
+            foreach (string f in Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.Desktop)))
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Tile t = new Tile();
+                    var Icon = System.Drawing.Icon.ExtractAssociatedIcon(f);
+                    Rectangle r = new Rectangle();
+                    t.Width = 80;
+                    r.Width = 30;
+                    t.Height = 80;
+                    r.Height = 30;
+                    r.Fill = new ImageBrush(Imaging.CreateBitmapSourceFromHBitmap(Icon.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions()));
+                    t.Content = r;
+                    t.Click += (object sender, RoutedEventArgs e) => { try { Process.Start(f); } catch { } };
+                    t.Title = System.IO.Path.GetFileName(f).Split(new char[] { '.' })[0];
+                    DesktopItems.Items.Add(t);
+                });
+            }
+            
+
+        }
+        public void SetWallpaper()
+        {
+            BitmapImage bm = new BitmapImage(new Uri((string)MainWindow.config.GetVar("DesktopD", "WallpaperPath")));
             Background.Background = new ImageBrush(bm);
         }
+
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            ScrollViewer scrollviewer = sender as ScrollViewer;
+            if (e.Delta > 0)
+                scrollviewer.LineLeft();
+            else
+                scrollviewer.LineRight();
+            e.Handled = true;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void ToggleSwitchButton_Click(object sender, RoutedEventArgs e)
+        {
+            desktop = !desktop;
+            if (!desktop)
+            {
+                Scopes.Visibility = Visibility.Visible;
+                DesktopView.Visibility = Visibility.Hidden;
+            }
+            else {
+                Scopes.Visibility = Visibility.Hidden;
+                DesktopView.Visibility = Visibility.Visible;
+            }
+        }
+
+ private void DesktopItems_Drop(object sender, DragEventArgs e)
+        {
+           // var source = e.Data.GetData(typeof(Tile)) as Tile;
+           // var target = ((Tile)(sender)) as Tile;
+
+           // int sourceIndex = DesktopItems.Items.IndexOf(source);
+           // int targetIndex = DesktopItems.Items.IndexOf(target);
+           //
+//Move(source, sourceIndex, targetIndex);
+        }
+        private void Move(Tile source, int sourceIndex, int targetIndex)
+        {
+            //if (sourceIndex < targetIndex)
+           // {
+           //     DesktopItems.Items.Insert(targetIndex + 1, source);
+           //     DesktopItems.Items.RemoveAt(sourceIndex);
+           // }
+          //  else
+           // {
+           //     int removeIndex = sourceIndex + 1;
+            //    if (DesktopItems.Items.Count + 1 > removeIndex)
+            //    {
+             //       DesktopItems.Items.Insert(targetIndex, source);
+//DesktopItems.Items.RemoveAt(removeIndex);
+              //  }
+           // }
+        }
+    }
+    class DesktopViewModel : IDropTarget
+    {
+        public ObservableCollection<DesktopItemModel> Items;
+
+        void IDropTarget.DragOver(IDropInfo dropInfo)
+        {
+            DesktopItemModel sourceItem = dropInfo.Data as DesktopItemModel;
+            DesktopItemModel targetItem = dropInfo.TargetItem as DesktopItemModel;
+
+            if (sourceItem != null && targetItem != null && targetItem.CanAcceptChildren)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Copy;
+            }
+        }
+
+        void IDropTarget.Drop(IDropInfo dropInfo)
+        {
+            Tile sourceItem = dropInfo.Data as Tile;
+            DesktopItemModel targetItem = dropInfo.TargetItem as DesktopItemModel;
+            targetItem.Children.Add(sourceItem);
+        }
+    }
+
+    class DesktopItemModel
+    {
+        public bool CanAcceptChildren { get; set; }
+        public ObservableCollection<Tile> Children { get; private set; }
     }
     public class WindowSinker
     {
