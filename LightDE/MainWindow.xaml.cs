@@ -77,17 +77,21 @@ namespace LightDE
             Clock.Header = DateTime.Now.ToString("HH:mm:ss");
             appslist = new List<xApp>();
             ap = new AppChooser();
-            ap.Show();
             SetPanelPos(PanelPosition);
             AppManager = new AppsListing();
             ClockTimer.Elapsed += (object sender, ElapsedEventArgs e) => { Dispatcher.Invoke(() => Clock.Header = DateTime.Now.ToString("HH:mm:ss")); };
             ClockTimer.Start();
             WindowManager wm = new WindowManager(AddNewTaskItem);
             notifyiconmanager = new NotifyIconManager(AddNewNotification);
+            new Thread(new ThreadStart(GetApps)).Start();
+            menu.ContextMenu = new ContextMenu();
+            MenuItem m = new MenuItem();
+            m.Header = "Choose Items...";
+            m.Click += (object sender, RoutedEventArgs e) => { ap.Show(); };
+            menu.ContextMenu.Items.Add(m);
             D.InitializeDesktop();
             Volume.Value = defaultPlaybackDevice.Volume;
 
-            new Thread(new ThreadStart(GetApps)).Start();
             instance = this;
         }
         ~MainWindow()
@@ -144,7 +148,7 @@ namespace LightDE
             }
         }
         [DllImport("user32.dll")]
-        private static extern int GetWindowText(int hWnd, StringBuilder title, int size);
+        public static extern int GetWindowText(int hWnd, StringBuilder title, int size);
 
         public string GetTitle(int hwnd)
         {
@@ -153,50 +157,66 @@ namespace LightDE
             GetWindowText(hwnd, title, 256);
             return title.ToString();
         }
+        private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+        private const UInt32 SWP_NOSIZE = 0x0001;
+        private const UInt32 SWP_NOMOVE = 0x0002;
+        private const UInt32 TOPMOST_FLAGS = SWP_NOMOVE | SWP_NOSIZE;
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
         public void SetPanelPos(PanelPos panelPos)// Sets working area and checks if panels arent overlaying
         {
-            SpaceReserver.MakeNewDesktopArea(0, PanelHeight+10, 0, 0);
+            SpaceReserver.MakeNewDesktopArea(0, 32, 0, 0);
             PanelPosition = PanelPos.Top;
             this.Left = 0;
             this.Top = 0;
             this.Width = PanelWidth;
             this.Height = PanelHeight;
+            SetWindowPos(Process.GetCurrentProcess().MainWindowHandle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
+            Dock d = new Dock();
+            d.Show();
         }
 
-        public async void GetApps()
+        public void GetApps()
         {
-            await Task.Factory.StartNew(() =>
-           {
+            var w = new Thread(new ThreadStart(() =>
+            {
+                List<xApp> xapps = AppManager.GetItems();
+                Parallel.ForEach<JToken>(ap.appslist, p =>
+                {
+                    Console.WriteLine("Loading token " + ap.appslist.IndexOf(p) + " out of " + (ap.appslist.Count - 1));
 
-           try
-           {
-               Parallel.ForEach<JToken>(ap.appslist, p => appslist.AddRange(AppManager.GetItems().Where(u => u.name == p.Value<string>())));
-
-               Parallel.ForEach<xApp>(appslist, l =>
-               {
-                   xApp item = l;
-                   Dispatcher.Invoke(() =>
-                   {
-                       MenuItem s = new MenuItem();
-                       s.Click += (object sender, RoutedEventArgs e) => { try { Process.Start(item.Path); } catch { MessageBox.Show("Unable to run item, make sure that the path is correct"); } };
-                       s.Header = item.name;
-                       Image m = new Image();
-                       var handle = item.icon.GetHbitmap();
-                       try
-                       {
-                           m.Source = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                           s.Icon = m;
-                       }
-                       finally { DeleteObject(handle); }
-                       menu.Items.Add(s);
-                   });
-               });
-               }
-               catch
-               {
-                   MessageBox.Show("Unable to run item! Make sure the path is correct");
-               }
-           });
+                    appslist.Add(xapps.Find(u => u.name == p.Value<string>()));
+                });
+                if (ap.appslist.Count == appslist.Count)
+                {
+                    MakeMenu();
+                }
+            }));
+            w.Start();
+                   
+                
+            }
+        public void MakeMenu()
+        {
+            Parallel.ForEach<xApp>(appslist, l =>
+            {
+                xApp item = l;
+                Console.WriteLine("Loading app " + appslist.IndexOf(l) + " out of " + (appslist.Count - 1));
+                Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    Console.WriteLine("This is not happening");
+                    MenuItem s = new MenuItem(); s.Click += (object sender, RoutedEventArgs e) => { try { Process.Start(item.Path); } catch { MessageBox.Show("Unable to run item, make sure that the path is correct"); } }; s.Header = item.name; Image m = new Image(); var handle = item.icon.GetHbitmap();
+                    try
+                    {
+                        m.Source = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                        Console.WriteLine("Image for " + l.name + " has been created");
+                        s.Icon = m;
+                    }
+                    finally { DeleteObject(handle); }
+                    menu.Items.Add(s);
+                }));
+            });
         }
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -363,6 +383,12 @@ namespace LightDE
         private void Forward(object sender, RoutedEventArgs e)
         {
             AppCommand(AppComandCode.MEDIA_NEXTTRACK);
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            this.WindowState = WindowState.Normal;
+            this.Topmost = true;
         }
     }
     public enum PanelPos

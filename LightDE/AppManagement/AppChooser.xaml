@@ -7,11 +7,12 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 
         mc:Ignorable="d"
-        Title="AppChooser" Height="300" Width="300">
+        Title="AppChooser" Height="300" Width="300" WindowStyle="ToolWindow">
     <Grid>
-        <ListBox x:Name="appbox" SelectionMode="Multiple" Margin="31,5,30,32">
+        <Label Content="Choose items to show in menu..."/>
+        <ListBox x:Name="appbox" SelectionMode="Multiple" Margin="31,25,30,0" Height="208" VerticalAlignment="Top">
 
         </ListBox>
-        <Button x:Name="button" Content="Save" HorizontalAlignment="Right" Width="75" Height="Auto" Margin="0,237,10,5" Click="button_Click"/>
+        <Button x:Name="button" Content="Save" HorizontalAlignment="Right" Width="75" Height="27" Margin="0,0,10,5" Click="button_Click" VerticalAlignment="Bottom"/>
     </Grid>
 </Window>

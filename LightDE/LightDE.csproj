@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B0941E4D-AB8E-46E0-BF8C-5A85302ACD2B}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LightDE</RootNamespace>
     <AssemblyName>LightDE</AssemblyName>
@@ -181,6 +181,9 @@
     <Compile Include="Desktop\Desktop.xaml.cs">
       <DependentUpon>Desktop.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dock.xaml.cs">
+      <DependentUpon>Dock.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NotifyIconManager.cs" />
     <Compile Include="Search.xaml.cs">
       <DependentUpon>Search.xaml</DependentUpon>
@@ -188,6 +191,9 @@
     <Compile Include="SpaceReserver.cs" />
     <Compile Include="TrayIcon.xaml.cs">
       <DependentUpon>TrayIcon.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Widgets\Performance.xaml.cs">
+      <DependentUpon>Performance.xaml</DependentUpon>
     </Compile>
     <Page Include="appIcon.xaml">
       <SubType>Designer</SubType>
@@ -206,6 +212,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Desktop\Desktop.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dock.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -238,6 +248,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TrayIcon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Widgets\Performance.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

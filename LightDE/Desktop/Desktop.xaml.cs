@@ -25,6 +25,7 @@ using Newtonsoft.Json;
 using System.Threading;
 using GongSolutions.Wpf.DragDrop;
 using System.Collections.ObjectModel;
+using LightDE.Widgets;
 
 namespace LightDE.Desktop
 {
@@ -125,9 +126,10 @@ namespace LightDE.Desktop
 
              Welcome.Visibility = Visibility.Hidden;
              Welcome.IsEnabled = false;
-            SetWallpaper();
+                SetWallpaper();
             AssignSize();
-
+            ws.Sink();
+            widgets.Children.Add(new Performance());
         }
         public void FillDesktopView()
         {

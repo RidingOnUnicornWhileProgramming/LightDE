@@ -5,7 +5,7 @@
                       xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
                       xmlns:local="clr-namespace:LightDE" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" x:Class="LightDE.MainWindow"
                       Title="LightDE" WindowStyle="None"  ShowInTaskbar="False" ResizeMode="NoResize"
-                      Height="27.875"  Topmost="True" 
+                      Height="27.875"  Topmost="True" StateChanged="Window_StateChanged"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 
 

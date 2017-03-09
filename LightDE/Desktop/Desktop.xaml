@@ -4,7 +4,7 @@
                       xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                       xmlns:local="clr-namespace:LightDE" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" x:Class="LightDE.Desktop.DesktopD"
                       Title="LightDE" WindowStyle="None" ShowInTaskbar="False" ResizeMode="NoResize"
-                      IsManipulationEnabled="False" WindowState="Maximized" Height="690.796" Width="929.675"
+                      IsManipulationEnabled="False" WindowState="Normal" Height="914.796" Width="1325.675" StateChanged="Window_StateChanged"
                             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
 
          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -33,7 +33,9 @@
                 <ImageBrush ImageSource="pack://siteoforigin:,,,/Desktop/Wallpaper.jpg"/>
             </Grid.Background>
             <Grid x:Name="Scopes">
-                <Grid x:Name="News" Margin="0,163,0,0" Background="#99D4D4D4" Height="205" VerticalAlignment="Top">
+                <Grid x:Name="widgets" Margin="0,249,0,0" Background="#99D4D4D4" Height="205" VerticalAlignment="Top">
+                </Grid>
+                <Grid x:Name="News" Margin="0,459,0,0" Background="#99D4D4D4" Height="205" VerticalAlignment="Top">
                     <Button Style="{StaticResource MaterialDesignFloatingActionButton}" Click="Button_Click" HorizontalAlignment="Right" Width="45" Height="45" VerticalAlignment="Top">
                         <iconPacks:PackIconMaterial Kind="Settings" VerticalAlignment="Center" HorizontalAlignment="Center" />
                     </Button>
@@ -42,7 +44,7 @@
                         <StackPanel x:Name="news" Margin="0, 0, 0, 0" FlowDirection="LeftToRight" Orientation="Horizontal" Height="160" Width="930"/>
                     </ScrollViewer>
                 </Grid>
-                <Grid x:Name="LastUsed" Margin="0,373,0,0" Background="#99D4D4D4" Height="215" VerticalAlignment="Top">
+                <Grid x:Name="LastUsed" Margin="0,669,0,0" Background="#99D4D4D4" Height="215" VerticalAlignment="Top">
 
                     <Label Content="Last used" FontSize="24"/>
                     <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" Margin="0,45,0,0" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">

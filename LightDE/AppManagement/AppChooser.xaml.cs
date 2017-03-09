@@ -49,30 +49,49 @@ namespace LightDE.AppManagement
         }
         public void FillBox()
         {
-            foreach (xApp x in apps.GetItems())
-            {
-                try
+            new Thread(new ThreadStart(
+                () =>
                 {
-                    ListBoxItem it = new ListBoxItem();
-                    it.Content = x.name;
-                    it.IsSelected = appslist.Any(o => o.ToString() == x.name);
-                    appbox.Items.Add(it);
-                }
-                catch { }
-            }
+                    foreach (xApp x in apps.GetItems())
+                    {
+                        try
+                        {
+                            Dispatcher.Invoke(
+                            () =>
+                            {
+
+                                ListBoxItem it = new ListBoxItem();
+                                it.Content = x.name;
+                                it.IsSelected = appslist.Any(o => o.ToString() == x.name);
+                                appbox.Items.Add(it);
+                            });
+                        }
+                        catch { }
+                    }
+                })).Start() ;
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            List<xApp> ap = apps.GetItems();
-            foreach (ListBoxItem s in appbox.Items)
+            JArray arrap = new JArray();
+
+            new Thread(new ThreadStart(() =>
             {
-                if (s.IsSelected)
+                Dispatcher.Invoke(() =>
                 {
-                    MainWindow.appslist.Add(ap.Find(o => o.name == s.Content.ToString()));
-                }
-            }
-            new Thread(new ThreadStart(MainWindow.instance.GetApps)).Start();
+                    List<xApp> ap = apps.GetItems();
+                    foreach (ListBoxItem s in appbox.Items)
+                    {
+                        if (s.IsSelected)
+                        {
+                            arrap.Add(s.Content.ToString());
+                            MainWindow.appslist.Add(ap.Find(o => o.name == s.Content.ToString()));
+                        }
+                    }
+                    appslist = arrap;
+                });
+                new Thread(new ThreadStart(MainWindow.instance.GetApps)).Start();
+            })).Start();
 
         }
 

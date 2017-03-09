@@ -79,8 +79,21 @@ namespace LightDE.Config
         }
         public void Serialize()
         {
+            bool done = false;
             var json = JsonConvert.SerializeObject(config);
-            File.WriteAllText(System.IO.Directory.GetCurrentDirectory() + "\\Config\\config.json", json);
+            try
+            {
+                if (!done)
+                {
+                    File.WriteAllText(System.IO.Directory.GetCurrentDirectory() + "\\Config\\config.json", json);
+                    done = true;
+                }
+
+            }
+            catch
+            {
+
+            }
         }
         public void GetFile()
         {
