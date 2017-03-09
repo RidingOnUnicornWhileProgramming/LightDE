@@ -9,7 +9,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 
 
-                      Width="1363.676" IsManipulationEnabled="False">
+                      Width="1363.676" IsManipulationEnabled="False" Loaded="Window_Loaded">
     <!-- UseNoneWindowStyle="True" ShowTitleBar="False"ShowCloseButton="False" ShowMinButton="False" ShowMaxRestoreButton="False" -->
 
     <Grid x:Name="Main" Margin="0" Background="White">
@@ -51,10 +51,10 @@
 
             </MenuItem>
         </Menu>
-        <Menu Margin="0,0,136,0" HorizontalAlignment="Right" Width="72">
-            <MenuItem Width="72" Height="28">
+        <Menu Margin="0,0,136,0" HorizontalAlignment="Right" Width="370">
+            <MenuItem Width="67" Height="28">
                 <MenuItem.Header>
-                    <StackPanel  x:Name="SoundPanel" Width="25" Orientation="Horizontal" FlowDirection="LeftToRight">
+                    <StackPanel x:Name="SoundPanel" Width="25" Orientation="Horizontal" FlowDirection="LeftToRight">
                         <iconPacks:PackIconMaterial Kind="VolumeHigh" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Height="Auto" Width="15" Margin="0,6,10,6" RenderTransformOrigin="0.8,1.18" />
                     </StackPanel>
                 </MenuItem.Header>
@@ -72,16 +72,32 @@
                     </Button>
                 </StackPanel>
             </MenuItem>
+            <MenuItem  x:Name="Clock" MouseLeftButtonUp="Clock_MouseLeftButtonUp" Header="dddd" FontFamily="Segoe UI Light" FontSize="15" Height="28"/>
+            <MenuItem x:Name="usermenu" Header="Power" Height="28" Width="203" VerticalContentAlignment="Center">
+                <MenuItem.Icon>
+                    <iconPacks:PackIconMaterial Kind="Account" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </MenuItem.Icon>
+                <MenuItem Header="Shutdown" Click="Shutdown" >
+                    <MenuItem.Icon>
+                        <iconPacks:PackIconMaterial Kind="Power" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Logout" Click="Logout">
+                    <MenuItem.Icon>
+                        <iconPacks:PackIconMaterial Kind="Logout" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Lock" Click="Lock">
+                    <MenuItem.Icon>
+                        <iconPacks:PackIconMaterial Kind="Lock" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
         </Menu>
         <Grid x:Name="RightBar" HorizontalAlignment="Right" Width="136" Background="#FF898989">
 
-            <StackPanel x:Name="NotifyiconHolder" Orientation="Horizontal"/>
+            <StackPanel x:Name="NotifyiconHolder" Orientation="Horizontal" Margin="0,0,67,0"/>
         </Grid>
-        <Menu HorizontalAlignment="Right" Width="129" Margin="0,0,208,0">
-            <MenuItem  x:Name="Clock" MouseLeftButtonUp="Clock_MouseLeftButtonUp" Header="dddd, dd.MM.yyyy HH:mm:ss" FontFamily="Segoe UI Light" FontSize="15" HorizontalContentAlignment="Center" Width="129" Height="28">
-
-            </MenuItem>
-        </Menu>
 
 
 

@@ -157,8 +157,19 @@ namespace LightDE.Desktop
         }
         public void SetWallpaper()
         {
-            BitmapImage bm = new BitmapImage(new Uri((string)MainWindow.config.GetVar("DesktopD", "WallpaperPath")));
-            Background.Background = new ImageBrush(bm);
+            var f = MainWindow.config.GetVar("General", "FirstRun") as string;
+            if (f == "true")
+            {
+                MainWindow.config.SetVar("DesktopD", "WallpaperPath", System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Desktop\Wallpaper.jpg"));
+                BitmapImage bm = new BitmapImage(new Uri((string)MainWindow.config.GetVar("DesktopD", "WallpaperPath")));
+                Background.Background = new ImageBrush(bm);
+                MainWindow.config.SetVar("General", "FirstRun", "false");
+            }
+            else
+            {
+                BitmapImage bm = new BitmapImage(new Uri((string)MainWindow.config.GetVar("DesktopD", "WallpaperPath")));
+                Background.Background = new ImageBrush(bm);
+            }
         }
 
         private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -215,6 +226,16 @@ namespace LightDE.Desktop
 //DesktopItems.Items.RemoveAt(removeIndex);
               //  }
            // }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            WindowInteropHelper wndHelper = new WindowInteropHelper(this);
+
+            int exStyle = (int)MainWindow.GetWindowLong(wndHelper.Handle, (int)MainWindow.GetWindowLongFields.GWL_EXSTYLE);
+
+            exStyle |= (int)MainWindow.ExtendedWindowStyles.WS_EX_TOOLWINDOW;
+            MainWindow.SetWindowLong(wndHelper.Handle, (int)MainWindow.GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
         }
     }
     class DesktopViewModel : IDropTarget

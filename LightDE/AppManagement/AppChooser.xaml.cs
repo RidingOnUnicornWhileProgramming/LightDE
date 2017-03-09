@@ -38,7 +38,6 @@ namespace LightDE.AppManagement
             set
             {
                 MainWindow.config.SetVar("Apps", "appnames", value);
-                appslist = value;
             }
         }
 
@@ -89,6 +88,7 @@ namespace LightDE.AppManagement
                         }
                     }
                     appslist = arrap;
+                    this.Close();
                 });
                 new Thread(new ThreadStart(MainWindow.instance.GetApps)).Start();
             })).Start();

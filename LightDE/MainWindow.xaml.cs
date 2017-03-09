@@ -87,12 +87,18 @@ namespace LightDE
             menu.ContextMenu = new ContextMenu();
             MenuItem m = new MenuItem();
             m.Header = "Choose Items...";
-            m.Click += (object sender, RoutedEventArgs e) => { ap.Show(); };
+            m.Click += (object sender, RoutedEventArgs e) => { ap = new AppChooser();  ap.Show(); };
             menu.ContextMenu.Items.Add(m);
             D.InitializeDesktop();
             Volume.Value = defaultPlaybackDevice.Volume;
+            WindowInteropHelper wndHelper = new WindowInteropHelper(this);
 
+            int exStyle = (int)GetWindowLong(wndHelper.Handle, (int)GetWindowLongFields.GWL_EXSTYLE);
+
+            exStyle |= (int)ExtendedWindowStyles.WS_EX_TOOLWINDOW;
+            SetWindowLong(wndHelper.Handle, (int)GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
             instance = this;
+            usermenu.Header = Environment.UserName;
         }
         ~MainWindow()
         {
@@ -188,10 +194,8 @@ namespace LightDE
 
                     appslist.Add(xapps.Find(u => u.name == p.Value<string>()));
                 });
-                if (ap.appslist.Count == appslist.Count)
-                {
-                    MakeMenu();
-                }
+
+                MakeMenu();
             }));
             w.Start();
                    
@@ -199,13 +203,16 @@ namespace LightDE
             }
         public void MakeMenu()
         {
+            Dispatcher.Invoke(() => menu.Items.Clear());
             Parallel.ForEach<xApp>(appslist, l =>
             {
+
                 xApp item = l;
                 Console.WriteLine("Loading app " + appslist.IndexOf(l) + " out of " + (appslist.Count - 1));
                 Dispatcher.BeginInvoke((Action)(() =>
                 {
                     Console.WriteLine("This is not happening");
+
                     MenuItem s = new MenuItem(); s.Click += (object sender, RoutedEventArgs e) => { try { Process.Start(item.Path); } catch { MessageBox.Show("Unable to run item, make sure that the path is correct"); } }; s.Header = item.name; Image m = new Image(); var handle = item.icon.GetHbitmap();
                     try
                     {
@@ -293,6 +300,68 @@ namespace LightDE
             }));
             p.Start();
         }
+        #region Window styles
+        [Flags]
+        public enum ExtendedWindowStyles
+        {
+            // ...
+            WS_EX_TOOLWINDOW = 0x00000080,
+            // ...
+        }
+
+        public enum GetWindowLongFields
+        {
+            // ...
+            GWL_EXSTYLE = (-20),
+            // ...
+        }
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetWindowLong(IntPtr hWnd, int nIndex);
+
+        public static IntPtr SetWindowLong(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
+        {
+            int error = 0;
+            IntPtr result = IntPtr.Zero;
+            // Win32 SetWindowLong doesn't clear error on success
+            SetLastError(0);
+
+            if (IntPtr.Size == 4)
+            {
+                // use SetWindowLong
+                Int32 tempResult = IntSetWindowLong(hWnd, nIndex, IntPtrToInt32(dwNewLong));
+                error = Marshal.GetLastWin32Error();
+                result = new IntPtr(tempResult);
+            }
+            else
+            {
+                // use SetWindowLongPtr
+                result = IntSetWindowLongPtr(hWnd, nIndex, dwNewLong);
+                error = Marshal.GetLastWin32Error();
+            }
+
+            if ((result == IntPtr.Zero) && (error != 0))
+            {
+                throw new System.ComponentModel.Win32Exception(error);
+            }
+
+            return result;
+        }
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", SetLastError = true)]
+        private static extern IntPtr IntSetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLong", SetLastError = true)]
+        private static extern Int32 IntSetWindowLong(IntPtr hWnd, int nIndex, Int32 dwNewLong);
+
+        private static int IntPtrToInt32(IntPtr intPtr)
+        {
+            return unchecked((int)intPtr.ToInt64());
+        }
+
+        [DllImport("kernel32.dll", EntryPoint = "SetLastError")]
+        public static extern void SetLastError(int dwErrorCode);
+        #endregion
         [DllImport("user32.dll")]
         public static extern void keybd_event(byte virtualKey, byte scanCode, uint flags, IntPtr extraInfo);
         public const int KEYEVENTF_EXTENTEDKEY = 1;
@@ -389,6 +458,37 @@ namespace LightDE
         {
             this.WindowState = WindowState.Normal;
             this.Topmost = true;
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            WindowInteropHelper wndHelper = new WindowInteropHelper(this);
+
+            int exStyle = (int)GetWindowLong(wndHelper.Handle, (int)GetWindowLongFields.GWL_EXSTYLE);
+
+            exStyle |= (int)ExtendedWindowStyles.WS_EX_TOOLWINDOW;
+            SetWindowLong(wndHelper.Handle, (int)GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
+        }
+        [DllImport("user32")]
+        public static extern void LockWorkStation();
+        [DllImport("user32")]
+        public static extern bool ExitWindowsEx(uint uFlags, uint dwReason);
+        private void Shutdown(object sender, RoutedEventArgs e)
+        {
+            var psi = new ProcessStartInfo("shutdown", "/s /t 0");
+            psi.CreateNoWindow = true;
+            psi.UseShellExecute = false;
+            Process.Start(psi);
+        }
+
+        private void Logout(object sender, RoutedEventArgs e)
+        {
+            ExitWindowsEx(0, 0);
+        }
+
+        private void Lock(object sender, RoutedEventArgs e)
+        {
+            LockWorkStation();
         }
     }
     public enum PanelPos

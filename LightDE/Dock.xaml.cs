@@ -37,6 +37,11 @@ namespace LightDE
                 WindowManager wm = new WindowManager(AddNewTaskItem);
             }
             catch { }
+            new Thread(new ThreadStart(() =>
+            {
+                Thread.Sleep(2000);
+                Dispatcher.Invoke(() => Top = System.Windows.SystemParameters.PrimaryScreenHeight - 10);
+            })).Start();
         }
 
         private void Dock_MouseEnter(object sender, MouseEventArgs e)
@@ -83,8 +88,8 @@ namespace LightDE
                         try
                         {
                             m.Source = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                            m.Width = 25;
-                            m.Height = 25;
+                            m.Width = 30;
+                            m.Height = 30;
                             s.Children.Add(m);
                         }
                         finally { MainWindow.DeleteObject(handle); }
@@ -116,6 +121,16 @@ namespace LightDE
             StringBuilder title = new StringBuilder(256);
             MainWindow.GetWindowText(hwnd, title, 256);
             return title.ToString();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            WindowInteropHelper wndHelper = new WindowInteropHelper(this);
+
+            int exStyle = (int)MainWindow.GetWindowLong(wndHelper.Handle, (int)MainWindow.GetWindowLongFields.GWL_EXSTYLE);
+
+            exStyle |= (int)MainWindow.ExtendedWindowStyles.WS_EX_TOOLWINDOW;
+            MainWindow.SetWindowLong(wndHelper.Handle, (int)MainWindow.GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
         }
     }
 }
