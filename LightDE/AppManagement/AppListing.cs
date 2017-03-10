@@ -32,16 +32,24 @@ namespace LightDE
                 {
                     Parallel.ForEach<string>(Directory.GetDirectories(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs"), dd =>
                     {
-                        Parallel.ForEach<string>(Directory.GetFiles(dd), ff =>
+                        try
                         {
-                            if (!ff.EndsWith(".ini"))
+                            Parallel.ForEach<string>(Directory.GetFiles(dd), ff =>
                             {
-                                if (!appslist.Any(x => x.name == (ExtractIcon.GetName(ff))))
+                                try
                                 {
-                                    menuApp.Add(new xApp(ExtractIcon.GetName(ff), System.Drawing.Icon.ExtractAssociatedIcon(ff).ToBitmap(), ff));
+                                    if (!ff.EndsWith(".ini"))
+                                    {
+                                        if (!appslist.Any(x => x.name == (ExtractIcon.GetName(ff))))
+                                        {
+                                            menuApp.Add(new xApp(ExtractIcon.GetName(ff), System.Drawing.Icon.ExtractAssociatedIcon(ff).ToBitmap(), ff));
+                                        }
+                                    }
                                 }
-                            }
-                        });
+                                catch { }
+                            });
+                        }
+                        catch { }
                     });
                 }
                 catch { }
@@ -54,7 +62,7 @@ namespace LightDE
             }
             return appslist;
         }
-       
+
     }
     public class ExtractIcon
     {

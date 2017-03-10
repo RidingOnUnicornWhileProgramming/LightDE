@@ -42,6 +42,7 @@ using LightDE.Config;
 using MaterialDesignThemes;
 using LightDE.AppManagement;
 using Newtonsoft.Json.Linq;
+using System.Collections.ObjectModel;
 
 namespace LightDE
 {
@@ -90,7 +91,13 @@ namespace LightDE
             m.Click += (object sender, RoutedEventArgs e) => { ap = new AppChooser();  ap.Show(); };
             menu.ContextMenu.Items.Add(m);
             D.InitializeDesktop();
-            Volume.Value = defaultPlaybackDevice.Volume;
+            try
+            {
+                Volume.Value = defaultPlaybackDevice.Volume;
+            }
+            catch {
+
+            }
             WindowInteropHelper wndHelper = new WindowInteropHelper(this);
 
             int exStyle = (int)GetWindowLong(wndHelper.Handle, (int)GetWindowLongFields.GWL_EXSTYLE);
@@ -185,10 +192,11 @@ namespace LightDE
 
         public void GetApps()
         {
+            ap.appslist = JsonConvert.DeserializeObject<JArray>(JsonConvert.SerializeObject(ap.appslist.Distinct()));
             var w = new Thread(new ThreadStart(() =>
             {
                 List<xApp> xapps = AppManager.GetItems();
-                Parallel.ForEach<JToken>(ap.appslist, p =>
+                Parallel.ForEach<JToken>(ap.appslist.Distinct<JToken>(), p =>
                 {
                     Console.WriteLine("Loading token " + ap.appslist.IndexOf(p) + " out of " + (ap.appslist.Count - 1));
 
@@ -203,27 +211,33 @@ namespace LightDE
             }
         public void MakeMenu()
         {
-            Dispatcher.Invoke(() => menu.Items.Clear());
-            Parallel.ForEach<xApp>(appslist, l =>
+            ObservableCollection<MenuItem> menuitems = new ObservableCollection<MenuItem>();
+           
+            foreach(xApp l in appslist.Distinct<xApp>())
             {
-
+                
                 xApp item = l;
-                Console.WriteLine("Loading app " + appslist.IndexOf(l) + " out of " + (appslist.Count - 1));
+                //Console.WriteLine("Loading app " + appslist.IndexOf(l) + " out of " + (appslist.Count - 1));
                 Dispatcher.BeginInvoke((Action)(() =>
                 {
-                    Console.WriteLine("This is not happening");
+                    //Console.WriteLine("This is not happening");
 
                     MenuItem s = new MenuItem(); s.Click += (object sender, RoutedEventArgs e) => { try { Process.Start(item.Path); } catch { MessageBox.Show("Unable to run item, make sure that the path is correct"); } }; s.Header = item.name; Image m = new Image(); var handle = item.icon.GetHbitmap();
+
                     try
                     {
                         m.Source = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                        Console.WriteLine("Image for " + l.name + " has been created");
+                        //Console.WriteLine("Image for " + l.name + " has been created");
                         s.Icon = m;
                     }
                     finally { DeleteObject(handle); }
-                    menu.Items.Add(s);
+                   menuitems.Add(s);
+
                 }));
-            });
+            }
+            Console.WriteLine(menuitems.Count);
+
+            Dispatcher.Invoke(() =>menu.ItemsSource = menuitems);
         }
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {

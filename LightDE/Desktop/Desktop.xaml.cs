@@ -79,24 +79,31 @@ namespace LightDE.Desktop
         }
         public void FetchRssFeed()
         {
-            RssFeed rs;
-            foreach (string l in MainWindow.config.GetVar("DesktopD", "rss") as Newtonsoft.Json.Linq.JArray)
+            try
             {
-
-                rs = RssHelper.ReadFeed(@l);
-                foreach (RssItem r in rs.Items)
+                RssFeed rs;
+                foreach (string l in MainWindow.config.GetVar("DesktopD", "rss") as Newtonsoft.Json.Linq.JArray)
                 {
-                    Dispatcher.Invoke(() =>
+
+                    rs = RssHelper.ReadFeed(@l);
+                    foreach (RssItem r in rs.Items)
                     {
-                        Tile t = new Tile();
-                        t.Title = r.Title;
-                        t.Content = r.Author;
-                        t.Click += (object sender, RoutedEventArgs e) => { Process.Start(r.Link); };
-                        t.Height = news.Height - 15;
-                        news.Width += t.Width;
-                        news.Children.Add(t);
-                    });
+                        Dispatcher.Invoke(() =>
+                        {
+                            Tile t = new Tile();
+                            t.Title = r.Title;
+                            t.Content = r.Author;
+                            t.Click += (object sender, RoutedEventArgs e) => { Process.Start(r.Link); };
+                            t.Height = news.Height - 15;
+                            news.Width += t.Width;
+                            news.Children.Add(t);
+                        });
+                    }
                 }
+            }
+            catch
+            {
+                MainWindow.config.SetVar("DesktopD", "rss", new List<string>() { "https://www.cnet.com/rss/news/" });
             }
         }
         public void GetRecentFiles()

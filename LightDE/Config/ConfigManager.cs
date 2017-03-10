@@ -18,8 +18,13 @@ namespace LightDE.Config
             {
                 var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(File.ReadAllText(System.IO.Directory.GetCurrentDirectory() + "\\Config\\config.json"));
                 config = json;
+                if (config == null)
+                {
+                    config = new Dictionary<string, object>();
+                }
             }
             catch(Exception ex) {
+                
                 MessageBox.Show(ex.ToString());
             }
             GetFile();
@@ -59,23 +64,36 @@ namespace LightDE.Config
             List<string> unique = new List<string>();
             foreach (KeyValuePair<string, object> o in config)
             {
-                if (!unique.Contains(o.Key))
+                try
                 {
-                    unique.Add(o.Key.Split(new char[] { '_' } )[0]);
+                    if (!unique.Contains(o.Key))
+                    {
+                        unique.Add(o.Key.Split(new char[] { '_' })[0]);
+                    }
                 }
+                catch (Exception ex)
+                {
 
+                }
             }
             return unique;
         }
         public object GetVar(string sender, string varname)
         {
             var configname = sender + "_" + varname;
-
-            if (config.ContainsKey(configname))
+            try
             {
-                return config[configname];
+                if (config.ContainsKey(configname))
+                {
+                    return config[configname];
+                }
+                else return null;
             }
-            else return null;
+            catch
+            {
+                return null;
+            }
+
         }
         public void Serialize()
         {

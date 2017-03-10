@@ -58,7 +58,6 @@ namespace LightDE.AppManagement
                             Dispatcher.Invoke(
                             () =>
                             {
-
                                 ListBoxItem it = new ListBoxItem();
                                 it.Content = x.name;
                                 it.IsSelected = appslist.Any(o => o.ToString() == x.name);
@@ -73,7 +72,7 @@ namespace LightDE.AppManagement
         private void button_Click(object sender, RoutedEventArgs e)
         {
             JArray arrap = new JArray();
-
+            MainWindow.appslist.Clear();
             new Thread(new ThreadStart(() =>
             {
                 Dispatcher.Invoke(() =>
@@ -84,6 +83,7 @@ namespace LightDE.AppManagement
                         if (s.IsSelected)
                         {
                             arrap.Add(s.Content.ToString());
+                            
                             MainWindow.appslist.Add(ap.Find(o => o.name == s.Content.ToString()));
                         }
                     }
