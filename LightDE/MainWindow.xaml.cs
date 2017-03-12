@@ -44,6 +44,7 @@ using LightDE.AppManagement;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using LightDE.Core;
+using System.IO;
 
 namespace LightDE
 {
@@ -54,9 +55,7 @@ namespace LightDE
     /// 
     [System.Serializable()]
     public partial class MainWindow : Window
-    {
-        public static Settings.Config config;
-        
+    {        
         static AppChooser ap;
         public static List<xApp> appslist;
         private NotifyIconManager notifyiconmanager; // keep alive callbacks
@@ -70,8 +69,7 @@ namespace LightDE
         public static MainWindow instance;
         public MainWindow()
         {
-            
-            config = new Settings.Config();
+            Config.Current = new Config(Directory.GetCurrentDirectory() + "\\Config", "config", ".json");
 
             DesktopD D = new DesktopD();
             D.Show();

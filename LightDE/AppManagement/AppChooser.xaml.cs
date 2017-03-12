@@ -23,24 +23,15 @@ namespace LightDE.AppManagement
     public partial class AppChooser : Window
     {
         public AppsListing apps = new AppsListing();
-        List<string> appsstrings = new List<string>();
         public List<string> appslist
         {
             get
             {
-                if (MainWindow.config.Apps_AppNames == null) // TODO make it work
-                {
-                    return new List<string>();
-                }
-                else
-                {
-                    return appsstrings;
-                }
+                return Config.Current.V1.Apps_AppNames;
             }
             set
             {
-                MainWindow.config.Apps_AppNames = value;
-                appsstrings = value;
+                Config.Current.V1.Apps_AppNames = value; // TODO is it supposed to stay like this?
             }
         }
 

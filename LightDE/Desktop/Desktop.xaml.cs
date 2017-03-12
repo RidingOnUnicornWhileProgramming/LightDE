@@ -83,7 +83,7 @@ namespace LightDE.Desktop
             try
             {
                 RssFeed rs;
-                foreach (string l in MainWindow.config.DesktopD_RSS)
+                foreach (string l in Config.Current.V1.DesktopD_RSS)
                 {
                     rs = RssHelper.ReadFeed(@l);
                     foreach (RssItem r in rs.Items)
@@ -103,7 +103,7 @@ namespace LightDE.Desktop
             }
             catch
             {
-                MainWindow.config.DesktopD_RSS = new List<string>() { "https://www.cnet.com/rss/news/" };
+                // shall we repeat the code above or what?
             }
         }
         public void GetRecentFiles()
@@ -164,19 +164,13 @@ namespace LightDE.Desktop
         }
         public void SetWallpaper()
         {
-           
-            if (MainWindow.config.General_FirstRun)
+            if (Config.Current.V1.General_FirstRun)
             {
-                MainWindow.config.DesktopD_WallpaperPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Desktop\Wallpaper.jpg");
-                BitmapImage bm = new BitmapImage(new Uri(MainWindow.config.DesktopD_WallpaperPath));
-                Background.Background = new ImageBrush(bm);
-                MainWindow.config.General_FirstRun = false;
+                Config.Current.V1.DesktopD_WallpaperPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Desktop\Wallpaper.jpg");
+                Config.Current.V1.General_FirstRun = false;
             }
-            else
-            {
-                BitmapImage bm = new BitmapImage(new Uri(MainWindow.config.DesktopD_WallpaperPath));
-                Background.Background = new ImageBrush(bm);
-            }
+            BitmapImage bm = new BitmapImage(new Uri(Config.Current.V1.DesktopD_WallpaperPath));
+            Background.Background = new ImageBrush(bm);
         }
 
         private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
