@@ -76,7 +76,6 @@ namespace LightDE.Core
             DWM_FLIP3D = 54
         }
     }
-
         /// <summary>
         /// The KeyboardListener is a static class that allows registering a number
         /// of event handlers that you want to get called in case some keyboard key is pressed 

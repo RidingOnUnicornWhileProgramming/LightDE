@@ -180,6 +180,7 @@
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\InteropHelper.cs" />
+    <Compile Include="Core\KeyBinder.cs" />
     <Compile Include="Core\KeyManager.cs" />
     <Compile Include="Desktop\Desktop.xaml.cs">
       <DependentUpon>Desktop.xaml</DependentUpon>
