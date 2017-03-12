@@ -20,7 +20,7 @@ using System.Net;
 using System.IO;
 using TNX.RssReader;
 using System.Diagnostics;
-using LightDE.Config;
+using LightDE.Settings;
 using Newtonsoft.Json;
 using System.Threading;
 using GongSolutions.Wpf.DragDrop;
@@ -33,7 +33,7 @@ namespace LightDE.Desktop
     /// Interaction logic for Desktop.xaml
     /// </summary>
     /// 
-    public partial class DesktopD : Window , ISaveable
+    public partial class DesktopD : Window
     {
         WindowSinker ws;
         bool desktop;
@@ -82,7 +82,7 @@ namespace LightDE.Desktop
             try
             {
                 RssFeed rs;
-                foreach (string l in MainWindow.config.GetVar("DesktopD", "rss") as Newtonsoft.Json.Linq.JArray)
+                foreach (string l in Config.Current.V1.DesktopD_RSS)
                 {
 
                     rs = RssHelper.ReadFeed(@l);
@@ -103,7 +103,7 @@ namespace LightDE.Desktop
             }
             catch
             {
-                MainWindow.config.SetVar("DesktopD", "rss", new List<string>() { "https://www.cnet.com/rss/news/" });
+                
             }
         }
         public void GetRecentFiles()
@@ -164,19 +164,13 @@ namespace LightDE.Desktop
         }
         public void SetWallpaper()
         {
-            var f = MainWindow.config.GetVar("General", "FirstRun") as string;
-            if (f == "true")
+            if (Config.Current.V1.General_FirstRun)
             {
-                MainWindow.config.SetVar("DesktopD", "WallpaperPath", System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Desktop\Wallpaper.jpg"));
-                BitmapImage bm = new BitmapImage(new Uri((string)MainWindow.config.GetVar("DesktopD", "WallpaperPath")));
-                Background.Background = new ImageBrush(bm);
-                MainWindow.config.SetVar("General", "FirstRun", "false");
+                Config.Current.V1.DesktopD_WallpaperPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Desktop\Wallpaper.jpg");
+                Config.Current.V1.General_FirstRun = false;
             }
-            else
-            {
-                BitmapImage bm = new BitmapImage(new Uri((string)MainWindow.config.GetVar("DesktopD", "WallpaperPath")));
-                Background.Background = new ImageBrush(bm);
-            }
+            BitmapImage bm = new BitmapImage(new Uri(Config.Current.V1.DesktopD_WallpaperPath));
+            Background.Background = new ImageBrush(bm);
         }
 
         private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)

@@ -26,18 +26,19 @@ namespace LightDE.AppManagement
         {
             get
             {
-                if (MainWindow.config.GetVar("Apps", "appnames") == null)
+                return new JArray();
+                /*if (MainWindow.config.GetVar("Apps", "appnames") == null) // TODO make it work
                 {
                     return new JArray();
                 }
                 else
                 {
                     return MainWindow.config.GetVar("Apps", "appnames") as JArray;
-                }
+                }*/
             }
             set
             {
-                MainWindow.config.SetVar("Apps", "appnames", value);
+                // MainWindow.config.SetVar("Apps", "appnames", value); // TODO make it work
             }
         }
 

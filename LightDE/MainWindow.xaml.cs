@@ -38,11 +38,12 @@ using System.Timers;
 using AudioSwitcher.AudioApi.CoreAudio;
 using WMPLib;
 using LightDE.Desktop;
-using LightDE.Config;
+using LightDE.Settings;
 using MaterialDesignThemes;
 using LightDE.AppManagement;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace LightDE
 {
@@ -54,7 +55,6 @@ namespace LightDE
     [System.Serializable()]
     public partial class MainWindow : Window
     {
-        public static ConfigManager config;
         static AppChooser ap;
         public static List<xApp> appslist;
         private NotifyIconManager notifyiconmanager; // keep alive callbacks
@@ -68,9 +68,7 @@ namespace LightDE
         public static MainWindow instance;
         public MainWindow()
         {
-            
-            config = new ConfigManager();
-            config.GetFile();
+            Config.Current = new Config(Directory.GetCurrentDirectory() + "\\Config", "config", ".json");
             DesktopD D = new DesktopD();
             D.Show();
             this.Show();
@@ -106,10 +104,8 @@ namespace LightDE
             SetWindowLong(wndHelper.Handle, (int)GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
             instance = this;
             usermenu.Header = Environment.UserName;
-        }
-        ~MainWindow()
-        {
-            config.Serialize();
+
+            new Settings.Settings().Show();
         }
         [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
         [return: MarshalAs(UnmanagedType.Bool)]
