@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Newtonsoft.Json.Linq;
 using System.Threading;
+using LightDE.Settings;
 
 namespace LightDE.AppManagement
 {
@@ -22,22 +23,24 @@ namespace LightDE.AppManagement
     public partial class AppChooser : Window
     {
         public AppsListing apps = new AppsListing();
-       public Newtonsoft.Json.Linq.JArray appslist
+        List<string> appsstrings = new List<string>();
+        public List<string> appslist
         {
             get
             {
-                if (MainWindow.config.GetVar("Apps", "appnames") == null)
+                if (MainWindow.config.Apps_AppNames == null) // TODO make it work
                 {
-                    return new JArray();
+                    return new List<string>();
                 }
                 else
                 {
-                    return MainWindow.config.GetVar("Apps", "appnames") as JArray;
+                    return appsstrings;
                 }
             }
             set
             {
-                MainWindow.config.SetVar("Apps", "appnames", value);
+                MainWindow.config.Apps_AppNames = value;
+                appsstrings = value;
             }
         }
 
@@ -58,20 +61,20 @@ namespace LightDE.AppManagement
                             Dispatcher.Invoke(
                             () =>
                             {
-                                ListBoxItem it = new ListBoxItem();
-                                it.Content = x.name;
-                                it.IsSelected = appslist.Any(o => o.ToString() == x.name);
-                                appbox.Items.Add(it);
+                                    ListBoxItem it = new ListBoxItem();
+                                    it.Content = x.name;
+                                    it.IsSelected = appslist.Any(o => o.ToString() == x.name);
+                                    appbox.Items.Add(it);
                             });
                         }
                         catch { }
                     }
-                })).Start() ;
+                })).Start();
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            JArray arrap = new JArray();
+            List<string> arrap = new List<string>();
             MainWindow.appslist.Clear();
             new Thread(new ThreadStart(() =>
             {
@@ -83,12 +86,14 @@ namespace LightDE.AppManagement
                         if (s.IsSelected)
                         {
                             arrap.Add(s.Content.ToString());
-                            
+
                             MainWindow.appslist.Add(ap.Find(o => o.name == s.Content.ToString()));
+                            MainWindow.appslist = MainWindow.appslist.Distinct<xApp>().ToList<xApp>();
                         }
                     }
-                    appslist = arrap;
+                    this.appslist = arrap;
                     this.Close();
+                    Config.Current.Save();
                 });
                 new Thread(new ThreadStart(MainWindow.instance.GetApps)).Start();
             })).Start();

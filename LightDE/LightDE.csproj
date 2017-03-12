@@ -154,7 +154,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="WindowManagement">
-      <HintPath>..\..\GitHub\DEWindowManagement\bin\Debug\WindowManagement.dll</HintPath>
+      <HintPath>..\..\DEWindowManagement\bin\Debug\WindowManagement.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -172,11 +172,12 @@
       <DependentUpon>AppChooser.xaml</DependentUpon>
     </Compile>
     <Compile Include="AppManagement\AppListing.cs" />
-    <Compile Include="Config\ConfigManager.cs" />
-    <Compile Include="Config\Setting.xaml.cs">
+    <Compile Include="Settings\ConfigHelper.cs" />
+    <Compile Include="Settings\Config.cs" />
+    <Compile Include="Settings\Setting.xaml.cs">
       <DependentUpon>Setting.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Config\Settings.xaml.cs">
+    <Compile Include="Settings\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\InteropHelper.cs" />
@@ -207,11 +208,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Config\Setting.xaml">
+    <Page Include="Settings\Setting.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Config\Settings.xaml">
+    <Page Include="Settings\Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -278,7 +279,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Config\config.json" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -336,7 +336,7 @@
     <Error Condition="!Exists('..\packages\cef.redist.x86.3.2785.1486\build\cef.redist.x86.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x86.3.2785.1486\build\cef.redist.x86.targets'))" />
   </Target>
   <Import Project="..\packages\cef.redist.x86.3.2785.1486\build\cef.redist.x86.targets" Condition="Exists('..\packages\cef.redist.x86.3.2785.1486\build\cef.redist.x86.targets')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

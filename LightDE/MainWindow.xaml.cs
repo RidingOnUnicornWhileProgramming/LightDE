@@ -38,7 +38,7 @@ using System.Timers;
 using AudioSwitcher.AudioApi.CoreAudio;
 using WMPLib;
 using LightDE.Desktop;
-using LightDE.Config;
+using LightDE.Settings;
 using MaterialDesignThemes;
 using LightDE.AppManagement;
 using Newtonsoft.Json.Linq;
@@ -55,7 +55,7 @@ namespace LightDE
     [System.Serializable()]
     public partial class MainWindow : Window
     {
-        public static ConfigManager config;
+        public static Settings.ConfigV1 config;
         
         static AppChooser ap;
         public static List<xApp> appslist;
@@ -71,8 +71,7 @@ namespace LightDE
         public MainWindow()
         {
             
-            config = new ConfigManager();
-            config.GetFile();
+            config = new Settings.ConfigV1();
             DesktopD D = new DesktopD();
             D.Show();
             this.Show();
@@ -108,10 +107,11 @@ namespace LightDE
             InteropHelper.SetWindowLong(wndHelper.Handle, (int)InteropHelper.GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
             instance = this;
             usermenu.Header = Environment.UserName;
+            
         }
         ~MainWindow()
         {
-            config.Serialize();
+            new Settings.Settings().Show();
         }
         private GUIItem AddNewTaskItem(WinHandle window)
         {
@@ -181,15 +181,17 @@ namespace LightDE
 
         public void GetApps()
         {
-            ap.appslist = JsonConvert.DeserializeObject<JArray>(JsonConvert.SerializeObject(ap.appslist.Distinct()));
             var w = new Thread(new ThreadStart(() =>
             {
-                List<xApp> xapps = AppManager.GetItems();
-                Parallel.ForEach<JToken>(ap.appslist.Distinct<JToken>(), p =>
-                {
-                    Console.WriteLine("Loading token " + ap.appslist.IndexOf(p) + " out of " + (ap.appslist.Count - 1));
 
-                    appslist.Add(xapps.Find(u => u.name == p.Value<string>()));
+                List<xApp> xapps = AppManager.GetItems();
+                Parallel.ForEach<string>(ap.appslist.Distinct<string>(), p =>
+                {
+
+                        Console.WriteLine("Loading token " + ap.appslist.IndexOf(p) + " out of " + (ap.appslist.Count - 1));
+
+                        appslist.Add(xapps.Find(u => u.name == p));
+
                 });
 
                 MakeMenu();
