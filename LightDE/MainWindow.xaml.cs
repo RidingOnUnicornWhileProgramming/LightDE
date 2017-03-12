@@ -55,7 +55,7 @@ namespace LightDE
     [System.Serializable()]
     public partial class MainWindow : Window
     {
-        public static Settings.ConfigV1 config;
+        public static Settings.Config config;
         
         static AppChooser ap;
         public static List<xApp> appslist;
@@ -71,7 +71,8 @@ namespace LightDE
         public MainWindow()
         {
             
-            config = new Settings.ConfigV1();
+            config = new Settings.Config();
+
             DesktopD D = new DesktopD();
             D.Show();
             this.Show();
