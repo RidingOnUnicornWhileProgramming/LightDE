@@ -1,4 +1,5 @@
 ﻿using DE.WindowManagement;
+using LightDE.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,7 +93,7 @@ namespace LightDE
                             m.Height = 30;
                             s.Children.Add(m);
                         }
-                        finally { MainWindow.DeleteObject(handle); }
+                        finally { InteropHelper.DeleteObject(handle); }
                         s.Children.Add(l);
 
                         g.Destroy = () => { Application.Current.Dispatcher.Invoke(() => ProcMenu.Children.Remove(ProcMenu.Children.Cast<StackPanel>().Where(x => x.Tag == s.Tag).First())); };
@@ -119,7 +120,7 @@ namespace LightDE
         {
 
             StringBuilder title = new StringBuilder(256);
-            MainWindow.GetWindowText(hwnd, title, 256);
+            InteropHelper.GetWindowText(hwnd, title, 256);
             return title.ToString();
         }
 
@@ -127,10 +128,10 @@ namespace LightDE
         {
             WindowInteropHelper wndHelper = new WindowInteropHelper(this);
 
-            int exStyle = (int)MainWindow.GetWindowLong(wndHelper.Handle, (int)MainWindow.GetWindowLongFields.GWL_EXSTYLE);
+            int exStyle = (int)InteropHelper.GetWindowLong(wndHelper.Handle, (int)InteropHelper.GetWindowLongFields.GWL_EXSTYLE);
 
-            exStyle |= (int)MainWindow.ExtendedWindowStyles.WS_EX_TOOLWINDOW;
-            MainWindow.SetWindowLong(wndHelper.Handle, (int)MainWindow.GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
+            exStyle |= (int)InteropHelper.ExtendedWindowStyles.WS_EX_TOOLWINDOW;
+            InteropHelper.SetWindowLong(wndHelper.Handle, (int)InteropHelper.GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
         }
     }
 }

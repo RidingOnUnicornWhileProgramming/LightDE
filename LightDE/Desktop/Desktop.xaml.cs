@@ -26,6 +26,7 @@ using System.Threading;
 using GongSolutions.Wpf.DragDrop;
 using System.Collections.ObjectModel;
 using LightDE.Widgets;
+using LightDE.Core;
 
 namespace LightDE.Desktop
 {
@@ -233,10 +234,10 @@ namespace LightDE.Desktop
         {
             WindowInteropHelper wndHelper = new WindowInteropHelper(this);
 
-            int exStyle = (int)MainWindow.GetWindowLong(wndHelper.Handle, (int)MainWindow.GetWindowLongFields.GWL_EXSTYLE);
+            int exStyle = (int)InteropHelper.GetWindowLong(wndHelper.Handle, (int)InteropHelper.GetWindowLongFields.GWL_EXSTYLE);
 
-            exStyle |= (int)MainWindow.ExtendedWindowStyles.WS_EX_TOOLWINDOW;
-            MainWindow.SetWindowLong(wndHelper.Handle, (int)MainWindow.GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
+            exStyle |= (int)InteropHelper.ExtendedWindowStyles.WS_EX_TOOLWINDOW;
+            InteropHelper.SetWindowLong(wndHelper.Handle, (int)InteropHelper.GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
         }
     }
     class DesktopViewModel : IDropTarget

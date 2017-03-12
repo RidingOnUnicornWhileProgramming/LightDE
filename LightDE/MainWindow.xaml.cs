@@ -43,6 +43,7 @@ using MaterialDesignThemes;
 using LightDE.AppManagement;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
+using LightDE.Core;
 
 namespace LightDE
 {
@@ -55,6 +56,7 @@ namespace LightDE
     public partial class MainWindow : Window
     {
         public static ConfigManager config;
+        
         static AppChooser ap;
         public static List<xApp> appslist;
         private NotifyIconManager notifyiconmanager; // keep alive callbacks
@@ -100,10 +102,10 @@ namespace LightDE
             }
             WindowInteropHelper wndHelper = new WindowInteropHelper(this);
 
-            int exStyle = (int)GetWindowLong(wndHelper.Handle, (int)GetWindowLongFields.GWL_EXSTYLE);
+            int exStyle = (int)InteropHelper.GetWindowLong(wndHelper.Handle, (int)InteropHelper.GetWindowLongFields.GWL_EXSTYLE);
 
-            exStyle |= (int)ExtendedWindowStyles.WS_EX_TOOLWINDOW;
-            SetWindowLong(wndHelper.Handle, (int)GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
+            exStyle |= (int)InteropHelper.ExtendedWindowStyles.WS_EX_TOOLWINDOW;
+            InteropHelper.SetWindowLong(wndHelper.Handle, (int)InteropHelper.GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
             instance = this;
             usermenu.Header = Environment.UserName;
         }
@@ -111,9 +113,6 @@ namespace LightDE
         {
             config.Serialize();
         }
-        [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool DeleteObject([In] IntPtr hObject);
         private GUIItem AddNewTaskItem(WinHandle window)
         {
             window.TitleChanged += Window_TitleChanged;
@@ -132,7 +131,7 @@ namespace LightDE
                         m.Source = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
                         s.Icon = m;
                     }
-                    finally { DeleteObject(handle); }
+                    finally { InteropHelper.DeleteObject(handle); }
                     g.Destroy = () => { Application.Current.Dispatcher.Invoke(() => ProcMenu.Items.Remove(ProcMenu.Items.Cast<MenuItem>().Where(x => x.Tag == s.Tag).First())); };
                     ProcMenu.Items.Add(s);
                 }
@@ -160,23 +159,13 @@ namespace LightDE
                 Dispatcher.Invoke(() => p.Header = GetTitle(int.Parse(p.Tag.ToString())));
             }
         }
-        [DllImport("user32.dll")]
-        public static extern int GetWindowText(int hWnd, StringBuilder title, int size);
-
         public string GetTitle(int hwnd)
         {
 
             StringBuilder title = new StringBuilder(256);
-            GetWindowText(hwnd, title, 256);
+            InteropHelper.GetWindowText(hwnd, title, 256);
             return title.ToString();
         }
-        private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
-        private const UInt32 SWP_NOSIZE = 0x0001;
-        private const UInt32 SWP_NOMOVE = 0x0002;
-        private const UInt32 TOPMOST_FLAGS = SWP_NOMOVE | SWP_NOSIZE;
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
         public void SetPanelPos(PanelPos panelPos)// Sets working area and checks if panels arent overlaying
         {
             SpaceReserver.MakeNewDesktopArea(0, 32, 0, 0);
@@ -185,7 +174,7 @@ namespace LightDE
             this.Top = 0;
             this.Width = PanelWidth;
             this.Height = PanelHeight;
-            SetWindowPos(Process.GetCurrentProcess().MainWindowHandle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
+            InteropHelper.SetWindowPos(Process.GetCurrentProcess().MainWindowHandle, InteropHelper.HWND_TOPMOST, 0, 0, 0, 0, InteropHelper.TOPMOST_FLAGS);
             Dock d = new Dock();
             d.Show();
         }
@@ -230,7 +219,7 @@ namespace LightDE
                         //Console.WriteLine("Image for " + l.name + " has been created");
                         s.Icon = m;
                     }
-                    finally { DeleteObject(handle); }
+                    finally { InteropHelper.DeleteObject(handle); }
                    menuitems.Add(s);
 
                 }));
@@ -314,139 +303,7 @@ namespace LightDE
             }));
             p.Start();
         }
-        #region Window styles
-        [Flags]
-        public enum ExtendedWindowStyles
-        {
-            // ...
-            WS_EX_TOOLWINDOW = 0x00000080,
-            // ...
-        }
 
-        public enum GetWindowLongFields
-        {
-            // ...
-            GWL_EXSTYLE = (-20),
-            // ...
-        }
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr GetWindowLong(IntPtr hWnd, int nIndex);
-
-        public static IntPtr SetWindowLong(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
-        {
-            int error = 0;
-            IntPtr result = IntPtr.Zero;
-            // Win32 SetWindowLong doesn't clear error on success
-            SetLastError(0);
-
-            if (IntPtr.Size == 4)
-            {
-                // use SetWindowLong
-                Int32 tempResult = IntSetWindowLong(hWnd, nIndex, IntPtrToInt32(dwNewLong));
-                error = Marshal.GetLastWin32Error();
-                result = new IntPtr(tempResult);
-            }
-            else
-            {
-                // use SetWindowLongPtr
-                result = IntSetWindowLongPtr(hWnd, nIndex, dwNewLong);
-                error = Marshal.GetLastWin32Error();
-            }
-
-            if ((result == IntPtr.Zero) && (error != 0))
-            {
-                throw new System.ComponentModel.Win32Exception(error);
-            }
-
-            return result;
-        }
-
-        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", SetLastError = true)]
-        private static extern IntPtr IntSetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
-
-        [DllImport("user32.dll", EntryPoint = "SetWindowLong", SetLastError = true)]
-        private static extern Int32 IntSetWindowLong(IntPtr hWnd, int nIndex, Int32 dwNewLong);
-
-        private static int IntPtrToInt32(IntPtr intPtr)
-        {
-            return unchecked((int)intPtr.ToInt64());
-        }
-
-        [DllImport("kernel32.dll", EntryPoint = "SetLastError")]
-        public static extern void SetLastError(int dwErrorCode);
-        #endregion
-        [DllImport("user32.dll")]
-        public static extern void keybd_event(byte virtualKey, byte scanCode, uint flags, IntPtr extraInfo);
-        public const int KEYEVENTF_EXTENTEDKEY = 1;
-        public const int KEYEVENTF_KEYUP = 0;
-        public const int VK_MEDIA_NEXT_TRACK = 0xB0;// code to jump to next track
-        public const int VK_MEDIA_PLAY_PAUSE = 0xB3;// code to play or pause a song
-        public const int VK_MEDIA_PREV_TRACK = 0xB1;// code to jump to prev track
-        public enum AppComandCode : uint
-        {
-            BASS_BOOST = 20,
-            BASS_DOWN = 19,
-            BASS_UP = 21,
-            BROWSER_BACKWARD = 1,
-            BROWSER_FAVORITES = 6,
-            BROWSER_FORWARD = 2,
-            BROWSER_HOME = 7,
-            BROWSER_REFRESH = 3,
-            BROWSER_SEARCH = 5,
-            BROWSER_STOP = 4,
-            LAUNCH_APP1 = 17,
-            LAUNCH_APP2 = 18,
-            LAUNCH_MAIL = 15,
-            LAUNCH_MEDIA_SELECT = 16,
-            MEDIA_NEXTTRACK = 11,
-            MEDIA_PLAY_PAUSE = 14,
-            MEDIA_PREVIOUSTRACK = 12,
-            MEDIA_STOP = 13,
-            TREBLE_DOWN = 22,
-            TREBLE_UP = 23,
-            VOLUME_DOWN = 9,
-            VOLUME_MUTE = 8,
-            VOLUME_UP = 10,
-            MICROPHONE_VOLUME_MUTE = 24,
-            MICROPHONE_VOLUME_DOWN = 25,
-            MICROPHONE_VOLUME_UP = 26,
-            CLOSE = 31,
-            COPY = 36,
-            CORRECTION_LIST = 45,
-            CUT = 37,
-            DICTATE_OR_COMMAND_CONTROL_TOGGLE = 43,
-            FIND = 28,
-            FORWARD_MAIL = 40,
-            HELP = 27,
-            MEDIA_CHANNEL_DOWN = 52,
-            MEDIA_CHANNEL_UP = 51,
-            MEDIA_FASTFORWARD = 49,
-            MEDIA_PAUSE = 47,
-            MEDIA_PLAY = 46,
-            MEDIA_RECORD = 48,
-            MEDIA_REWIND = 50,
-            MIC_ON_OFF_TOGGLE = 44,
-            NEW = 29,
-            OPEN = 30,
-            PASTE = 38,
-            PRINT = 33,
-            REDO = 35,
-            REPLY_TO_MAIL = 39,
-            SAVE = 32,
-            SEND_MAIL = 41,
-            SPELL_CHECK = 42,
-            UNDO = 34,
-            DELETE = 53,
-            DWM_FLIP3D = 54
-        }
-        [DllImport("user32.dll")]
-        static extern IntPtr SendMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-        void AppCommand(AppComandCode commandCode)
-        {
-            int CommandID = (int)commandCode << 16;
-            SendMessageW(Process.GetCurrentProcess().MainWindowHandle, 0x319, Process.GetCurrentProcess().MainWindowHandle, (IntPtr)CommandID);
-        }
         private void Volume_MouseUp(object sender, MouseButtonEventArgs e)
         {
 
@@ -454,18 +311,18 @@ namespace LightDE
         //Currently doesn't work, I must find another way...
         private void BackWard(object sender, RoutedEventArgs e)
         {
-            AppCommand(AppComandCode.MEDIA_PREVIOUSTRACK);
+            KeyManager.AppCommand(KeyManager.AppComandCode.MEDIA_PREVIOUSTRACK);
             Console.WriteLine("Back");
         }
 
         private void PlayPause(object sender, RoutedEventArgs e)
         {
-            AppCommand(AppComandCode.MEDIA_PLAY_PAUSE);
+            KeyManager.AppCommand(KeyManager.AppComandCode.MEDIA_PLAY_PAUSE);
         }
 
         private void Forward(object sender, RoutedEventArgs e)
         {
-            AppCommand(AppComandCode.MEDIA_NEXTTRACK);
+            KeyManager.AppCommand(KeyManager.AppComandCode.MEDIA_NEXTTRACK);
         }
 
         private void Window_StateChanged(object sender, EventArgs e)
@@ -478,15 +335,11 @@ namespace LightDE
         {
             WindowInteropHelper wndHelper = new WindowInteropHelper(this);
 
-            int exStyle = (int)GetWindowLong(wndHelper.Handle, (int)GetWindowLongFields.GWL_EXSTYLE);
+            int exStyle = (int)InteropHelper.GetWindowLong(wndHelper.Handle, (int)InteropHelper.GetWindowLongFields.GWL_EXSTYLE);
 
-            exStyle |= (int)ExtendedWindowStyles.WS_EX_TOOLWINDOW;
-            SetWindowLong(wndHelper.Handle, (int)GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
+            exStyle |= (int)InteropHelper.ExtendedWindowStyles.WS_EX_TOOLWINDOW;
+            InteropHelper.SetWindowLong(wndHelper.Handle, (int)InteropHelper.GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
         }
-        [DllImport("user32")]
-        public static extern void LockWorkStation();
-        [DllImport("user32")]
-        public static extern bool ExitWindowsEx(uint uFlags, uint dwReason);
         private void Shutdown(object sender, RoutedEventArgs e)
         {
             var psi = new ProcessStartInfo("shutdown", "/s /t 0");
@@ -497,12 +350,12 @@ namespace LightDE
 
         private void Logout(object sender, RoutedEventArgs e)
         {
-            ExitWindowsEx(0, 0);
+            InteropHelper.ExitWindowsEx(0, 0);
         }
 
         private void Lock(object sender, RoutedEventArgs e)
         {
-            LockWorkStation();
+            InteropHelper.LockWorkStation();
         }
     }
     public enum PanelPos
