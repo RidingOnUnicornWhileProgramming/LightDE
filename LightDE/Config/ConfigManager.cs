@@ -52,7 +52,7 @@ namespace LightDE.Config
             Dictionary<string, object> dict = new Dictionary<string, object>();
             foreach (KeyValuePair<string, object> o in config)
             {
-                if (o.Key.StartsWith(key))
+                if (o.Key.StartsWith(key + '_'))
                 {
                     dict.Add(o.Key, o.Value);
                 }
@@ -64,11 +64,12 @@ namespace LightDE.Config
             List<string> unique = new List<string>();
             foreach (KeyValuePair<string, object> o in config)
             {
+                String key = o.Key.Split(new char[] { '_' })[0];
                 try
                 {
-                    if (!unique.Contains(o.Key))
+                    if (!unique.Contains(key))
                     {
-                        unique.Add(o.Key.Split(new char[] { '_' })[0]);
+                        unique.Add(key);
                     }
                 }
                 catch (Exception ex)
