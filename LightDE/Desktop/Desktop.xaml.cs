@@ -196,15 +196,9 @@ namespace LightDE.Desktop
         private void ToggleSwitchButton_Click(object sender, RoutedEventArgs e)
         {
             desktop = !desktop;
-            if (!desktop)
-            {
-                Scopes.Visibility = Visibility.Visible;
-                DesktopView.Visibility = Visibility.Hidden;
-            }
-            else {
-                Scopes.Visibility = Visibility.Hidden;
-                DesktopView.Visibility = Visibility.Visible;
-            }
+
+            Scopes.Visibility = desktop ? Visibility.Hidden : Visibility.Visible;
+            DesktopView.Visibility = desktop ? Visibility.Visible : Visibility.Hidden;
         }
 
  private void DesktopItems_Drop(object sender, DragEventArgs e)
