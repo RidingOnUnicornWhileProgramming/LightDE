@@ -70,7 +70,7 @@ namespace LightDE
         public MainWindow()
         {
             Config.Current = new Config(Directory.GetCurrentDirectory() + "\\Config", "config", ".json");
-
+            instance = this;
             DesktopD D = new DesktopD();
             D.Show();
             this.Show();
@@ -98,6 +98,17 @@ namespace LightDE
             catch {
 
             }
+
+            usermenu.Header = Environment.UserName;
+            SetTopMost();
+        }
+        ~MainWindow()
+        {
+            new Settings.Settings().Show();
+        }
+
+        public void SetTopMost()
+        {
             WindowInteropHelper wndHelper = new WindowInteropHelper(this);
 
             int exStyle = (int)InteropHelper.GetWindowLong(wndHelper.Handle, (int)InteropHelper.GetWindowLongFields.GWL_EXSTYLE);
@@ -105,12 +116,6 @@ namespace LightDE
             exStyle |= (int)InteropHelper.ExtendedWindowStyles.WS_EX_TOOLWINDOW;
             InteropHelper.SetWindowLong(wndHelper.Handle, (int)InteropHelper.GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
             instance = this;
-            usermenu.Header = Environment.UserName;
-            
-        }
-        ~MainWindow()
-        {
-            new Settings.Settings().Show();
         }
         private GUIItem AddNewTaskItem(WinHandle window)
         {

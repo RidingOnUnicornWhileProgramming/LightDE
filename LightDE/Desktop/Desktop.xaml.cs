@@ -50,8 +50,9 @@ namespace LightDE.Desktop
         {
             InitializeComponent();
             ws = new WindowSinker(this);
+            WindowState = WindowState.Maximized;
+
             ShowWelcomeScreen();
-            
         }
 
         private void Window_StateChanged(object sender, EventArgs e)
@@ -77,6 +78,7 @@ namespace LightDE.Desktop
             Top = 30;
             Left = 0;
             ws.Sink();
+
         }
         public void FetchRssFeed()
         {
