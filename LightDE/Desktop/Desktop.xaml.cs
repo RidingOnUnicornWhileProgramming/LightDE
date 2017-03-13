@@ -27,6 +27,8 @@ using GongSolutions.Wpf.DragDrop;
 using System.Collections.ObjectModel;
 using LightDE.Widgets;
 using LightDE.Core;
+using MaterialDesignThemes.Wpf;
+using System.Text.RegularExpressions;
 
 namespace LightDE.Desktop
 {
@@ -92,12 +94,32 @@ namespace LightDE.Desktop
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            Tile t = new Tile();
-                            t.Title = r.Title;
-                            t.Content = r.Author;
-                            t.Click += (object sender, RoutedEventArgs e) => { Process.Start(r.Link); };
+                            news.Children.Add(new Separator() { Width = 8 });
+
+                            Card t = new Card();
+                            StackPanel Items = new StackPanel();
+
+                            TextBlock text = new TextBlock();
+                            text.Text = r.Title;
+                            text.FontSize = 16;
+                            text.TextWrapping = TextWrapping.Wrap;
+                            text.FontFamily = new FontFamily(@"pack://application:,,,/MaterialDesignThemes.MahApps;component/Themes/MaterialDesignTheme.MahApps.Fonts.xaml");
+                            text.Height = 75;
+                            text.Padding = new Thickness(5, 0, 5, 2);
+                            Button b = new Button();
+                            b.Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"];
+                            b.Click += (object sender, RoutedEventArgs e) => { Process.Start(r.Link); };
+                            b.Content = "Read More...";
+                            b.HorizontalAlignment = HorizontalAlignment.Right;
                             t.Height = news.Height - 15;
                             news.Width += t.Width;
+                            Items.Width = 200;
+                            Items.Height = 100;
+                            Items.Children.Add(text);
+
+                            Items.Children.Add(b);
+                            t.Content = Items;
+
                             news.Children.Add(t);
                         });
                     }
@@ -114,15 +136,28 @@ namespace LightDE.Desktop
             {
                 Dispatcher.Invoke(() =>
                 {
-                    Tile t = new Tile();
+                    lastused.Children.Add(new Separator() { Width = 8 } );
+                    Card t = new Card() { Width = 150, Height = 150 } ;
+                    StackPanel l = new StackPanel();
                     var Icon = System.Drawing.Icon.ExtractAssociatedIcon(f);
-                    Rectangle r = new Rectangle();
+                    Image r = new Image();
                     r.Width = 50;
                     r.Height = 50;
-                    r.Fill = new ImageBrush(Imaging.CreateBitmapSourceFromHBitmap(Icon.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions()));
-                    t.Content = r;
-                    t.Click += (object sender, RoutedEventArgs e) => { try { Process.Start(f); } catch { } };
-                    t.Title = System.IO.Path.GetFileName(f).Split(new char[] {'.'})[0];
+                    r.Source = Imaging.CreateBitmapSourceFromHBitmap(Icon.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+
+
+                    t.MouseLeftButtonUp += (object sender, MouseButtonEventArgs e) => { try { Process.Start(f); } catch { } };
+                    TextBlock text = new TextBlock();
+                    text.Padding = new Thickness(2, 10, 2, 2);
+                    text.FontSize = 24;
+                    text.FontFamily = new FontFamily(@"pack://application:,,,/MaterialDesignThemes.MahApps;component/Themes/MaterialDesignTheme.MahApps.Fonts.xaml");
+                    
+                    text.Text = System.IO.Path.GetFileName(f).Split(new char[] {'.'})[0];
+                    text.TextWrapping = TextWrapping.Wrap;
+                    l.Children.Add(new Separator() { Height = 10, Width = 0 });
+                    l.Children.Add(r);
+                    l.Children.Add(text);
+                    t.Content = l;
                     lastused.Width += t.Width;
                     lastused.Children.Add(t);
                 });
