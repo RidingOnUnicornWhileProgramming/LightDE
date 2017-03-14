@@ -29,6 +29,7 @@ using LightDE.Widgets;
 using LightDE.Core;
 using MaterialDesignThemes.Wpf;
 using System.Text.RegularExpressions;
+using System.Collections;
 
 namespace LightDE.Desktop
 {
@@ -55,6 +56,9 @@ namespace LightDE.Desktop
             WindowState = WindowState.Maximized;
 
             ShowWelcomeScreen();
+            
+            DesktopItems.Items.Clear();
+            DesktopItems.DataContext = new DesktopViewModel();
         }
 
         private void Window_StateChanged(object sender, EventArgs e)
@@ -65,7 +69,6 @@ namespace LightDE.Desktop
         {
             new Thread(new ThreadStart(FetchRssFeed)).Start();
             new Thread(new ThreadStart(GetRecentFiles)).Start();
-            new Thread(new ThreadStart(FillDesktopView)).Start();
 
             Background.Visibility = Visibility.Hidden;
             Welcome.Visibility = Visibility.Visible;
@@ -270,35 +273,7 @@ namespace LightDE.Desktop
             InteropHelper.SetWindowLong(wndHelper.Handle, (int)InteropHelper.GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
         }
     }
-    class DesktopViewModel : IDropTarget
-    {
-        public ObservableCollection<DesktopItemModel> Items;
 
-        void IDropTarget.DragOver(IDropInfo dropInfo)
-        {
-            DesktopItemModel sourceItem = dropInfo.Data as DesktopItemModel;
-            DesktopItemModel targetItem = dropInfo.TargetItem as DesktopItemModel;
-
-            if (sourceItem != null && targetItem != null && targetItem.CanAcceptChildren)
-            {
-                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                dropInfo.Effects = DragDropEffects.Copy;
-            }
-        }
-
-        void IDropTarget.Drop(IDropInfo dropInfo)
-        {
-            Tile sourceItem = dropInfo.Data as Tile;
-            DesktopItemModel targetItem = dropInfo.TargetItem as DesktopItemModel;
-            targetItem.Children.Add(sourceItem);
-        }
-    }
-
-    class DesktopItemModel
-    {
-        public bool CanAcceptChildren { get; set; }
-        public ObservableCollection<Tile> Children { get; private set; }
-    }
     public class WindowSinker
     {
         #region Properties
@@ -430,5 +405,111 @@ namespace LightDE.Desktop
         }
 
         #endregion
+    }
+    public class DesktopItem
+    {
+        public string Name { get; set; }
+        public string path { get; set; }
+        public ImageSource BitmapImage { get; set; }
+        public void OpenApp(object sender, MouseButtonEventArgs e)
+        {
+            Process.Start(path);
+        }
+    }
+    public class AppClickCommand : ICommand
+    {
+        private string _path;
+        public AppClickCommand(string path)
+        {
+            _path = path;
+
+        }
+
+        public void Execute(object parameter)
+        {
+            if (parameter == null)
+            {
+                return;
+            }
+            var app = (string)parameter;
+            Process.Start(app);
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public event EventHandler CanExecuteChanged;
+    }
+    public class CommandHandler : ICommand
+    {
+        private Action _action;
+        private bool _canExecute;
+        public CommandHandler(Action action, bool canExecute)
+        {
+            _action = action;
+            _canExecute = canExecute;
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            Console.WriteLine("Can executes");
+
+            return _canExecute;
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        public void Execute(object parameter)
+        {
+            var app = (string)parameter;
+            Process.Start(app);
+            Console.WriteLine("Clicked");
+            _action();
+        }
+    }
+    public class DesktopViewModel : IDropTarget
+    {
+        public ObservableCollection<DesktopItem> DesktopCollection { get; set; }
+        private ICommand _clickCommand;
+        public ICommand ClickCommand
+        {
+            get
+            {
+                _clickCommand = new CommandHandler(() => MyAction(), _canExecute);
+                Console.WriteLine("Click init");
+                return _clickCommand;
+            }
+        }
+        private bool _canExecute;
+        public void MyAction()
+        {
+            Console.WriteLine("Clicked");
+        }
+ 
+        public DesktopViewModel()
+        {
+            DesktopCollection = new ObservableCollection<DesktopItem>();
+            foreach (string f in Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.Desktop)))
+            {
+                var Icon = System.Drawing.Icon.ExtractAssociatedIcon(f);
+                DesktopCollection.Add(new DesktopItem() { Name = System.IO.Path.GetFileName(f).Split(new char[] { '.' })[0], BitmapImage = Imaging.CreateBitmapSourceFromHBitmap(Icon.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions()), path = f });
+            }
+        }
+        public void DragOver(IDropInfo dropInfo)
+        {
+            if (dropInfo.Data is DesktopItem)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Move;
+            }
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            DesktopItem msp = (DesktopItem)dropInfo.Data;
+            ((IList)dropInfo.DragInfo.SourceCollection).Remove(msp);
+        }
     }
 }

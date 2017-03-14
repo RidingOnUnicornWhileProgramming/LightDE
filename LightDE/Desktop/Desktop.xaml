@@ -55,85 +55,24 @@
                 </Grid>
             </Grid>
             <Grid x:Name="DesktopView" Visibility="Hidden">
-                <dragablz:DragablzItemsControl x:Name="DesktopItems">
-                    <dragablz:DragablzItemsControl.ItemsPanel>
+                <ListBox Margin="50, 50, 50, 50" x:Name="DesktopItems" Grid.Column="1" SelectionMode="Extended" ItemsSource="{Binding DesktopCollection}" dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True">
+                    <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel />
+                            <WrapPanel IsItemsHost="True" />
                         </ItemsPanelTemplate>
-                    </dragablz:DragablzItemsControl.ItemsPanel>
-                    <dragablz:DragablzItemsControl.ItemContainerStyle>
-                        <Style TargetType="dragablz:DragablzItem">
-                            <Setter Property="Padding" Value="0 4 0 4" />
-                            <Setter Property="Margin" Value="32 0 32 0" />
-                            <!-- here we create a custom item container, to animate a card popping out towards the user as it is dragged -->
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type dragablz:DragablzItem}">
-                                        <ControlTemplate.Resources>
-                                            <SineEase x:Key="Ease" EasingMode="EaseInOut" />
-                                        </ControlTemplate.Resources>
-                                        <Grid RenderTransformOrigin=".5, .5">
-                                            <materialDesign:Card Content="{TemplateBinding ContentControl.Content}" ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}" 
-                                                         HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
-                                                         Margin="{TemplateBinding Control.Padding}"                                
-                                                         x:Name="Card"                                                         
-                                                     />
-                                            <Thumb Style="{DynamicResource InvisibleThumbStyle}" dragablz:DragablzItem.IsCustomThumb="True">
-                                                <Thumb.Template>
-                                                    <ControlTemplate>
-                                                        <Grid Background="Transparent" />
-                                                    </ControlTemplate>
-                                                </Thumb.Template>
-                                            </Thumb>
-                                            <Grid.RenderTransform>
-                                                <ScaleTransform x:Name="ScaleTransform" ScaleX="1" ScaleY="1" />
-                                            </Grid.RenderTransform>
-                                        </Grid>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsDragging" Value="True">
-                                                <Trigger.EnterActions>
-                                                    <BeginStoryboard>
-                                                        <Storyboard>
-                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleX">
-                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1.12" EasingFunction="{StaticResource Ease}" />
-                                                            </DoubleAnimationUsingKeyFrames>
-                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleY">
-                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1.12" EasingFunction="{StaticResource Ease}" />
-                                                            </DoubleAnimationUsingKeyFrames>
-                                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Card" Storyboard.TargetProperty="(materialDesign:ShadowAssist.ShadowDepth)">
-                                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.08" Value="{x:Static materialDesign:ShadowDepth.Depth2}" />
-                                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.12" Value="{x:Static materialDesign:ShadowDepth.Depth3}" />
-                                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.16" Value="{x:Static materialDesign:ShadowDepth.Depth4}" />
-                                                            </ObjectAnimationUsingKeyFrames>
-                                                        </Storyboard>
-                                                    </BeginStoryboard>
-                                                </Trigger.EnterActions>
-                                                <Trigger.ExitActions>
-                                                    <BeginStoryboard>
-                                                        <Storyboard>
-                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleX">
-                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1" EasingFunction="{StaticResource Ease}" />
-                                                            </DoubleAnimationUsingKeyFrames>
-                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform" Storyboard.TargetProperty="ScaleY">
-                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1" EasingFunction="{StaticResource Ease}" />
-                                                            </DoubleAnimationUsingKeyFrames>
-                                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Card" Storyboard.TargetProperty="(materialDesign:ShadowAssist.ShadowDepth)">
-                                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.12" Value="{x:Static materialDesign:ShadowDepth.Depth4}" />
-                                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.16" Value="{x:Static materialDesign:ShadowDepth.Depth3}" />
-                                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.22" Value="{x:Static materialDesign:ShadowDepth.Depth2}" />
-                                                            </ObjectAnimationUsingKeyFrames>
+                    </ListBox.ItemsPanel>
 
-                                                        </Storyboard>
-                                                    </BeginStoryboard>
-                                                </Trigger.ExitActions>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </dragablz:DragablzItemsControl.ItemContainerStyle>
-                </dragablz:DragablzItemsControl>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Button Height="90" Width="90" Command="{Binding ClickCommand}" CommandParameter="{Binding path}">
+                                <StackPanel>
+                                    <Image Source="{Binding BitmapImage}" Width="40" Height="40"/>
+                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12"/>
+                                </StackPanel>
+                            </Button>
+                     </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </Grid>
             <ToggleButton Click="ToggleSwitchButton_Click" Margin="0,51,10,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         </Grid>

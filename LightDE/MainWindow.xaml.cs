@@ -36,7 +36,6 @@ using System.Runtime.InteropServices;
 using DE.WindowManagement;
 using System.Timers;
 using AudioSwitcher.AudioApi.CoreAudio;
-using WMPLib;
 using LightDE.Desktop;
 using LightDE.Settings;
 using MaterialDesignThemes;
@@ -60,7 +59,6 @@ namespace LightDE
         public static List<xApp> appslist;
         private NotifyIconManager notifyiconmanager; // keep alive callbacks
         CoreAudioDevice defaultPlaybackDevice = new CoreAudioController().DefaultPlaybackDevice;
-        public IWMPMedia currentMedia { get; set; }
         public static AppsListing AppManager;
         public PanelPos PanelPosition = PanelPos.Top;
         public int PanelHeight = 30;
