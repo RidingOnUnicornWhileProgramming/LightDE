@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Windows.Controls;
+using LightDE.Core;
 
 namespace LightDE.Settings
 {
@@ -52,7 +53,7 @@ namespace LightDE.Settings
     public class ConfigV1
     {
         public List<string> Apps_AppNames = new List<string>();
-
+        public List<KeyBinding> Core_KeyBindings = new List<KeyBinding>();
         public List<string> DesktopD_RSS = new List<string>() { "http://www.techradar.com/rss" };
         public string DesktopD_WallpaperPath = "";
 

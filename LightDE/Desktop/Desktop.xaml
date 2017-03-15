@@ -37,9 +37,7 @@
                 <Grid x:Name="widgets" Margin="0,249,0,0" Background="#99D4D4D4" Height="205" VerticalAlignment="Top">
                 </Grid>
                 <Grid x:Name="News" Margin="0,459,0,0" Background="#99D4D4D4" Height="205" VerticalAlignment="Top">
-                    <Button Style="{StaticResource MaterialDesignFloatingActionButton}" Click="Button_Click" HorizontalAlignment="Right" Width="45" Height="45" VerticalAlignment="Top">
-                        <iconPacks:PackIconMaterial Kind="Settings" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </Button>
+
                     <Label Content="This might interest you..." FontSize="24"/>
                     <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" Margin="0,45,0,0" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
                         <StackPanel x:Name="news" Margin="0, 0, 0, 0" FlowDirection="LeftToRight" Orientation="Horizontal" Height="160" Width="930"/>

@@ -20,6 +20,7 @@ namespace LightDE.Core
         }
         public enum AppComandCode : uint
         {
+            NULL = 0,
             BASS_BOOST = 20,
             BASS_DOWN = 19,
             BASS_UP = 21,
@@ -157,7 +158,7 @@ namespace LightDE.Core
 
             #region Public methods
 
-            static KeyboardListener()
+            public KeyboardListener()
             {
                 ListeningWindow.KeyDelegate aKeyDelegate = new ListeningWindow.KeyDelegate(KeyHandler);
                 s_Listener = new ListeningWindow(aKeyDelegate);

@@ -67,38 +67,55 @@ namespace LightDE
         public static MainWindow instance;
         public MainWindow()
         {
-            Config.Current = new Config(Directory.GetCurrentDirectory() + "\\Config", "config", ".json");
-            instance = this;
-            DesktopD D = new DesktopD();
-            D.Show();
-            this.Show();
             InitializeComponent();
-            Clock.Header = DateTime.Now.ToString("HH:mm:ss");
-            appslist = new List<xApp>();
-            ap = new AppChooser();
-            SetPanelPos(PanelPosition);
-            AppManager = new AppsListing();
-            ClockTimer.Elapsed += (object sender, ElapsedEventArgs e) => { Dispatcher.Invoke(() => Clock.Header = DateTime.Now.ToString("HH:mm:ss")); };
-            ClockTimer.Start();
+            KeyBinder key = new KeyBinder();
+
+            new Thread(new ThreadStart(Init)).Start();
+
+        }
+        void Init()
+        {
+            Config.Current = new Config(Directory.GetCurrentDirectory() + "\\Config", "config", ".json");
+
+            Dispatcher.Invoke(
+              () =>
+              {
+                  usermenu.Header = Environment.UserName;
+                  ap = new AppChooser();
+
+                  instance = this;
+                  DesktopD D = new DesktopD();
+                  D.Show();
+                  Clock.Header = DateTime.Now.ToString("HH:mm:ss");
+
+                  ClockTimer.Elapsed += (object sender, ElapsedEventArgs e) => { Dispatcher.Invoke(() => Clock.Header = DateTime.Now.ToString("HH:mm:ss")); };
+                  ClockTimer.Start();
+                  menu.ContextMenu = new ContextMenu();
+                  MenuItem m = new MenuItem();
+                  m.Header = "Choose Items...";
+                  m.Click += (object sender, RoutedEventArgs e) => { ap = new AppChooser(); ap.Show(); };
+                  menu.ContextMenu.Items.Add(m);
+                  try
+                  {
+                      Volume.Value = defaultPlaybackDevice.Volume;
+                  }
+                  catch
+                  {
+
+                  }
+                  D.InitializeDesktop();
+                  Dock d = new Dock();
+                  d.Show();
+              });
+
             WindowManager wm = new WindowManager(AddNewTaskItem);
             notifyiconmanager = new NotifyIconManager(AddNewNotification);
+            appslist = new List<xApp>();
+            SetPanelPos(PanelPosition);
+            AppManager = new AppsListing();
             new Thread(new ThreadStart(GetApps)).Start();
-            menu.ContextMenu = new ContextMenu();
-            MenuItem m = new MenuItem();
-            m.Header = "Choose Items...";
-            m.Click += (object sender, RoutedEventArgs e) => { ap = new AppChooser();  ap.Show(); };
-            menu.ContextMenu.Items.Add(m);
-            D.InitializeDesktop();
-            try
-            {
-                Volume.Value = defaultPlaybackDevice.Volume;
-            }
-            catch {
 
-            }
-
-            usermenu.Header = Environment.UserName;
-            SetTopMost();
+            Dispatcher.Invoke(() => SetTopMost());
         }
         ~MainWindow()
         {
@@ -171,14 +188,18 @@ namespace LightDE
         public void SetPanelPos(PanelPos panelPos)// Sets working area and checks if panels arent overlaying
         {
             SpaceReserver.MakeNewDesktopArea(0, 32, 0, 0);
-            PanelPosition = PanelPos.Top;
-            this.Left = 0;
-            this.Top = 0;
-            this.Width = PanelWidth;
-            this.Height = PanelHeight;
+            Dispatcher.Invoke(
+                () =>
+                {
+                    PanelPosition = PanelPos.Top;
+                    this.Left = 0;
+                    this.Top = 0;
+                    this.Width = PanelWidth;
+                    this.Height = PanelHeight;
+
+                });
             InteropHelper.SetWindowPos(Process.GetCurrentProcess().MainWindowHandle, InteropHelper.HWND_TOPMOST, 0, 0, 0, 0, InteropHelper.TOPMOST_FLAGS);
-            Dock d = new Dock();
-            d.Show();
+
         }
 
         public void GetApps()
