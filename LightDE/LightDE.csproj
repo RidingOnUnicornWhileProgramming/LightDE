@@ -103,6 +103,9 @@
       <HintPath>..\packages\gong-wpf-dragdrop.1.1.0\lib\net45\GongSolutions.Wpf.DragDrop.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MadMilkman.Ini, Version=1.0.6.0, Culture=neutral, PublicKeyToken=4e0b5157a7ffbb74, processorArchitecture=MSIL">
+      <HintPath>..\packages\MadMilkman.Ini.1.0.6.0\lib\net20\MadMilkman.Ini.dll</HintPath>
+    </Reference>
     <Reference Include="MahApps.Metro, Version=1.4.3.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.4.3\lib\net45\MahApps.Metro.dll</HintPath>
       <Private>True</Private>
@@ -178,6 +181,7 @@
     <Compile Include="AppManagement\AppChooser.xaml.cs">
       <DependentUpon>AppChooser.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AppManagement\AppFetcher.cs" />
     <Compile Include="AppManagement\AppListing.cs" />
     <Compile Include="Settings\ConfigHelper.cs" />
     <Compile Include="Settings\Config.cs" />

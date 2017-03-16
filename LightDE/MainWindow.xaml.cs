@@ -71,6 +71,8 @@ namespace LightDE
             KeyBinder key = new KeyBinder();
 
             new Thread(new ThreadStart(Init)).Start();
+            AppFetcher af = new AppFetcher();
+            af.GenerateFiles();
 
         }
         void Init()
