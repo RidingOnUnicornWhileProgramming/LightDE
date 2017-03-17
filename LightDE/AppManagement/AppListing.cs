@@ -25,7 +25,6 @@ namespace LightDE
                         {
                             appslist.Add(new xApp(ExtractIcon.GetName(f), System.Drawing.Icon.ExtractAssociatedIcon(f).ToBitmap(), f));
                         }
-                       
                     });
                 });
                 try

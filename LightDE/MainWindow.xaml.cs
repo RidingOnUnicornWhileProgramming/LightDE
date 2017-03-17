@@ -117,7 +117,7 @@ namespace LightDE
             AppManager = new AppsListing();
             new Thread(new ThreadStart(GetApps)).Start();
 
-            Dispatcher.Invoke(() => SetTopMost());
+           // Dispatcher.Invoke(() => SetTopMost());
         }
         ~MainWindow()
         {
