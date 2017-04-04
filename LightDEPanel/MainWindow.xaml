@@ -7,7 +7,7 @@
                       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"      
 
              
-                      xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="LightDE.UI.MainWindow"
+                      xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="LightDE.MainWindow"
                         
                       Title="LightDE" ShowInTaskbar="False" ResizeMode="NoResize"
                       

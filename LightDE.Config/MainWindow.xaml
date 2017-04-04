@@ -1,0 +1,24 @@
+﻿<Controls:MetroWindow x:Class="LightDE.Config.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        GlowBrush="{DynamicResource AccentColorBrush}"
+        BorderThickness="1"
+        xmlns:local="clr-namespace:LightDE.Config"
+        mc:Ignorable="d"
+        WindowStyle="ToolWindow"
+        ShowMaxRestoreButton="False"
+        ShowMinButton="False"
+                              FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
+
+        Title="Config" Height="350" Width="525">
+    <Grid>
+        <StackPanel>
+            
+        </StackPanel>
+    </Grid>
+</Controls:MetroWindow>

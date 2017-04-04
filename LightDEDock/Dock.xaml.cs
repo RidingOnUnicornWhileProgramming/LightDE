@@ -1,5 +1,6 @@
 ﻿using DE.WindowManagement;
 using LightDE.Core;
+using LightDEDock;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +44,7 @@ namespace LightDE
                 Thread.Sleep(2000);
                 Dispatcher.Invoke(() => Top = System.Windows.SystemParameters.PrimaryScreenHeight - 10);
             })).Start();
+            new DockClient();
         }
 
         private void Dock_MouseEnter(object sender, MouseEventArgs e)

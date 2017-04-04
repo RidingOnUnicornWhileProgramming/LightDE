@@ -39,13 +39,13 @@ using AudioSwitcher.AudioApi.CoreAudio;
 using LightDE.Desktop;
 using LightDE.Settings;
 using MaterialDesignThemes;
+using LightDE.AppManagement;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using LightDE.Core;
 using System.IO;
-using LightDE.UI;
 
-namespace LightDE.UI
+namespace LightDE.Panel
 {
     /// <summary>
     /// Main Class for Panel
@@ -56,8 +56,6 @@ namespace LightDE.UI
     public partial class MainWindow : Window
     {        
         private NotifyIconManager _notifyiconmanager; // keep alive callbacks
-        internal UIClient _client = new UIClient();
-        CoreAudioDevice defaultPlaybackDevice = new CoreAudioController().DefaultPlaybackDevice;
         public PanelPos PanelPosition = PanelPos.Top;
         public int PanelHeight = 30;
         public int PanelWidth = (int)System.Windows.SystemParameters.PrimaryScreenWidth;
@@ -66,15 +64,47 @@ namespace LightDE.UI
         public MainWindow()
         {
             InitializeComponent();
-            _client = new UIClient();
-
         }
         void Init()
         {
             Config.Current = new Config(Directory.GetCurrentDirectory() + "\\Config", "config", ".json");
+
+            Dispatcher.Invoke(
+              () =>
+              {
+                  usermenu.Header = Environment.UserName;
+                  _appChooser = new AppChooser();
+
+                  _current = this;
+                  DesktopD D = new DesktopD();
+                  D.Show();
+                  Clock.Header = DateTime.Now.ToString("HH:mm:ss");
+
+                  ClockTimer.Elapsed += (object sender, ElapsedEventArgs e) => { Dispatcher.Invoke(() => Clock.Header = DateTime.Now.ToString("HH:mm:ss")); };
+                  ClockTimer.Start();
+                  menu.ContextMenu = new ContextMenu();
+                  MenuItem m = new MenuItem();
+                  m.Header = "Choose Items...";
+                  m.Click += (object sender, RoutedEventArgs e) => { _appChooser = new AppChooser(); _appChooser.Show(); };
+                  menu.ContextMenu.Items.Add(m);
+                  try
+                  {
+                      Volume.Value = defaultPlaybackDevice.Volume;
+                  }
+                  catch
+                  {
+
+                  }
+                  D.InitializeDesktop();
+                  Dock d = new Dock();
+                  d.Show();
+              });
+
             WindowManager wm = new WindowManager(AddNewTaskItem);
             _notifyiconmanager = new NotifyIconManager(AddNewNotification);
+            _applist = new List<xApp>();
             SetPanelPos(PanelPosition);
+            _appListing = new AppsListing();
             new Thread(new ThreadStart(GetApps)).Start();
 
            // Dispatcher.Invoke(() => SetTopMost());
@@ -166,8 +196,54 @@ namespace LightDE.UI
 
         public void GetApps()
         {
-           
+            var w = new Thread(new ThreadStart(() =>
+            {
+
+                List<xApp> xapps = _appListing.GetItems();
+                Parallel.ForEach<string>(_appChooser.appslist.Distinct<string>(), p =>
+                {
+
+                        Console.WriteLine("Loading token " + _appChooser.appslist.IndexOf(p) + " out of " + (_appChooser.appslist.Count - 1));
+
+                        _applist.Add(xapps.Find(u => u.name == p));
+
+                });
+
+                MakeMenu();
+            }));
+            w.Start();
+                   
                 
+            }
+        public void MakeMenu()
+        {
+            ObservableCollection<MenuItem> menuitems = new ObservableCollection<MenuItem>();
+           
+            foreach(xApp l in _applist.Distinct<xApp>())
+            {
+                
+                xApp item = l;
+                //Console.WriteLine("Loading app " + appslist.IndexOf(l) + " out of " + (appslist.Count - 1));
+                Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    //Console.WriteLine("This is not happening");
+
+                    MenuItem s = new MenuItem(); s.Click += (object sender, RoutedEventArgs e) => { try { Process.Start(item.Path); } catch { MessageBox.Show("Unable to run item, make sure that the path is correct"); } }; s.Header = item.name; Image m = new Image(); var handle = item.icon.GetHbitmap();
+
+                    try
+                    {
+                        m.Source = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                        //Console.WriteLine("Image for " + l.name + " has been created");
+                        s.Icon = m;
+                    }
+                    finally { InteropHelper.DeleteObject(handle); }
+                   menuitems.Add(s);
+
+                }));
+            }
+            Console.WriteLine(menuitems.Count);
+
+            Dispatcher.Invoke(() =>menu.ItemsSource = menuitems);
         }
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -249,21 +325,21 @@ namespace LightDE.UI
         {
 
         }
+        //Currently doesn't work, I must find another way...
         private void BackWard(object sender, RoutedEventArgs e)
         {
-            _client.Request("Prev");
-
+            KeyManager.AppCommand(KeyManager.AppComandCode.MEDIA_PREVIOUSTRACK);
+            Console.WriteLine("Back");
         }
 
         private void PlayPause(object sender, RoutedEventArgs e)
         {
-            _client.Request("PlayPause");
-
+            KeyManager.AppCommand(KeyManager.AppComandCode.MEDIA_PLAY_PAUSE);
         }
 
         private void Forward(object sender, RoutedEventArgs e)
         {
-            _client.Request("Next");
+            KeyManager.AppCommand(KeyManager.AppComandCode.MEDIA_NEXTTRACK);
         }
 
         private void Window_StateChanged(object sender, EventArgs e)

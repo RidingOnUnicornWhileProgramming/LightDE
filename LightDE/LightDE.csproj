@@ -7,8 +7,8 @@
     <ProjectGuid>{B0941E4D-AB8E-46E0-BF8C-5A85302ACD2B}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LightDE</RootNamespace>
-    <AssemblyName>LightDE</AssemblyName>
+    <RootNamespace>LightDE.UI</RootNamespace>
+    <AssemblyName>LightDE.UI</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -96,6 +96,10 @@
     <Reference Include="Cairo.WindowsHooksWrapper">
       <HintPath>.\Cairo.WindowsHooksWrapper.dll</HintPath>
     </Reference>
+    <Reference Include="CommandLine, Version=1.9.71.2, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Dragablz, Version=0.0.3.186, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dragablz.0.0.3.186\lib\net45\Dragablz.dll</HintPath>
       <Private>True</Private>
@@ -173,69 +177,40 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="ZetaIpc, Version=1.0.0.5, Culture=neutral, PublicKeyToken=6c27b71344e0b736, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZetaIpc.1.0.0.5\lib\net40-full\ZetaIpc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="appIcon.xaml.cs">
+    <Compile Include="InteropHelper.cs" />
+    <Compile Include="UIClient.cs" />
+    <Compile Include="UIElements\appIcon.xaml.cs">
       <DependentUpon>appIcon.xaml</DependentUpon>
     </Compile>
-    <Compile Include="AppManagement\AppChooser.xaml.cs">
-      <DependentUpon>AppChooser.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="AppManagement\AppFetcher.cs" />
-    <Compile Include="AppManagement\AppListing.cs" />
-    <Compile Include="Settings\ConfigHelper.cs" />
-    <Compile Include="Settings\Config.cs" />
-    <Compile Include="Settings\Setting.xaml.cs">
-      <DependentUpon>Setting.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Settings\Settings.xaml.cs">
-      <DependentUpon>Settings.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Core\InteropHelper.cs" />
-    <Compile Include="Core\KeyBinder.cs" />
-    <Compile Include="Core\KeyManager.cs" />
     <Compile Include="Desktop\Desktop.xaml.cs">
       <DependentUpon>Desktop.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dock.xaml.cs">
-      <DependentUpon>Dock.xaml</DependentUpon>
-    </Compile>
     <Compile Include="NotifyIconManager.cs" />
-    <Compile Include="Search.xaml.cs">
+    <Compile Include="UIElements\Search.xaml.cs">
       <DependentUpon>Search.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SpaceReserver.cs" />
-    <Compile Include="TrayIcon.xaml.cs">
+    <Compile Include="Desktop\SpaceReserver.cs" />
+    <Compile Include="UIElements\TrayIcon.xaml.cs">
       <DependentUpon>TrayIcon.xaml</DependentUpon>
     </Compile>
     <Compile Include="Widgets\Performance.xaml.cs">
       <DependentUpon>Performance.xaml</DependentUpon>
     </Compile>
-    <Page Include="appIcon.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="AppManagement\AppChooser.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Settings\Setting.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Settings\Settings.xaml">
+    <Page Include="UIElements\appIcon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Desktop\Desktop.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dock.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -251,7 +226,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="MenuItem.xaml">
+    <Page Include="UIElements\MenuItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -263,11 +238,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Search.xaml">
+    <Page Include="UIElements\Search.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TrayIcon.xaml">
+    <Page Include="UIElements\TrayIcon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

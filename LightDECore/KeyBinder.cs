@@ -1,9 +1,6 @@
 ﻿using Gma.UserActivityMonitor;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LightDE.Core
 {
@@ -12,30 +9,28 @@ namespace LightDE.Core
         public List<KeyBinding> KeyBinds = new List<KeyBinding>();
         public KeyBinder()
         {
-            HookManager.KeyPress += HookManager_KeyPress;
             HookManager.KeyUp += HookManager_KeyUp;
-            HookManager.MouseMove += HookManager_MouseMove;
+            Console.WriteLine("KeyBinder init done. now you can user control keys on your keyboard");
         }
         bool mute;
         double vol;
         private void HookManager_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             bool known = false;
-            Console.WriteLine(e.KeyCode);
             switch (e.KeyCode.ToString())
             {
                 case "VolumeUp":
                     try
                     {
 
-                        MainWindow.instance.Volume.Value = MainWindow.instance.Volume.Value + 0.6;
+                        Program._audio.Volume = Program._audio.Volume + 0.6;
                     }
                     catch { }
                     break;
                 case "VolumeDown":
                     try
                     {
-                        MainWindow.instance.Volume.Value = MainWindow.instance.Volume.Value - 0.6;
+                        Program._audio.Volume = Program._audio.Volume - 0.6;
                     }
                     catch { }
                     break;
@@ -52,12 +47,12 @@ namespace LightDE.Core
                         mute = !mute;
                         if (mute)
                         {
-                            vol = MainWindow.instance.Volume.Value;
-                            MainWindow.instance.Volume.Value = 0;
+                            vol = Program._audio.Volume;
+                            Program._audio.Volume = 0;
                         }
                         else
                         {
-                            MainWindow.instance.Volume.Value = vol;
+                            Program._audio.Volume = vol;
                         }
                     }
                     catch { }
@@ -75,15 +70,6 @@ namespace LightDE.Core
                     KeyManager.AppCommand(key.Code);
                 }
             }
-        }
-
-        private void HookManager_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-        }
-
-        private void HookManager_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
-        {
-            Console.WriteLine(e.KeyChar);
         }
     }
     [System.Serializable]
