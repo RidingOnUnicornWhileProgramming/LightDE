@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using Newtonsoft.Json;
 using System.Threading;
+using System.Diagnostics;
 
 namespace LightDE.Config
 {
@@ -24,21 +25,44 @@ namespace LightDE.Config
     public partial class MainWindow : MetroWindow
     {
         public Dictionary<string, string> variables = new Dictionary<string, string>();
-        static ConfigClient config;
+        internal static ConfigClient config;
         public MainWindow()
         {
-            config = new ConfigClient();
             InitializeComponent();
-            variables = JsonConvert.DeserializeObject<Dictionary<string, string>>(config.GetConfig());
-            new Thread(new ThreadStart(FillConfig)).Start();
+            new Thread(new ThreadStart(Init)).Start();
+
+        }
+        void Init()
+        {
+            config = new ConfigClient();
+
+            try
+            {
+                variables = JsonConvert.DeserializeObject<Dictionary<string, string>>(config.GetConfig());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            FillConfig();
         }
         public void FillConfig()
         {
-            //Parallel.ForEach<Dic
-            //TODO: Make this fill stack panel with config.
-            //When you click "save it setvars for every key"
-            //by ipc 
-            //I think that goes on github
+            Parallel.ForEach<KeyValuePair<string, string>>(variables, var =>
+            {
+                if (var.Key != "FirstRun")
+                {
+                    Dispatcher.Invoke(() => configBox.Children.Add(new Variable(var.Key, var.Value)));
+                }
+            });
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (Variable var in configBox.Children)
+            {
+                var.Save();
+            }
         }
     }
 }

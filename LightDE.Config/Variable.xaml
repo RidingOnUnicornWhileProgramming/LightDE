@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LightDE.Config"
              FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+
              mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -35,10 +37,12 @@
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    <StackPanel Orientation="Horizontal">
-        <Label x:Name="varName" />
-        <TextBox Width="300" x:Name="Var" />
+    <materialDesign:Card>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <Label VerticalAlignment="Center" x:Name="varName" FontStretch="Expanded"/>
+        <TextBox Width="309" x:Name="Var" />
+            <Separator Foreground="Transparent" Background="Transparent" BorderBrush="Transparent" Width="10"></Separator>
     </StackPanel>
-        
+    </materialDesign:Card>
 
 </UserControl>

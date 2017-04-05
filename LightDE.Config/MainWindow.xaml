@@ -6,19 +6,27 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
-        GlowBrush="{DynamicResource AccentColorBrush}"
-        BorderThickness="1"
         xmlns:local="clr-namespace:LightDE.Config"
-        mc:Ignorable="d"
-        WindowStyle="ToolWindow"
-        ShowMaxRestoreButton="False"
-        ShowMinButton="False"
-                              FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
+                      FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 
-        Title="Config" Height="350" Width="525">
+        Height="350" Width="525" FontSize="20" WindowTitleBrush="{DynamicResource AccentColorBrush}">
     <Grid>
-        <StackPanel>
-            
-        </StackPanel>
+        <materialDesign:ColorZone Padding="16" materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                                            Mode="PrimaryMid" Grid.ColumnSpan="2">
+            <DockPanel>
+                <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
+                    <StackPanel>
+                        <Button Content="Save" x:Name="Save" Click="Save_Click"/>
+                        <Separator/>
+                    </StackPanel>
+                </materialDesign:PopupBox>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22">LightDE Configuration</TextBlock>
+            </DockPanel>
+        </materialDesign:ColorZone>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,76,0,0">
+            <StackPanel x:Name="configBox" Orientation="Vertical" HorizontalAlignment="Center" Width="Auto">
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Controls:MetroWindow>

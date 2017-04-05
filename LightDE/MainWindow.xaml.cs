@@ -37,13 +37,14 @@ using DE.WindowManagement;
 using System.Timers;
 using AudioSwitcher.AudioApi.CoreAudio;
 using LightDE.Desktop;
-using LightDE.Settings;
 using MaterialDesignThemes;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using LightDE.Core;
 using System.IO;
 using LightDE.UI;
+using LightDE.Config;
+using LightDE.UI.Windows;
 
 namespace LightDE.UI
 {
@@ -52,11 +53,11 @@ namespace LightDE.UI
     /// </summary>
     /// //TODO END RADIAL MENU
     /// 
-    [System.Serializable()]
     public partial class MainWindow : Window
     {        
         private NotifyIconManager _notifyiconmanager; // keep alive callbacks
         internal UIClient _client = new UIClient();
+        internal ConfigClient _configClient = new ConfigClient();
         CoreAudioDevice defaultPlaybackDevice = new CoreAudioController().DefaultPlaybackDevice;
         public PanelPos PanelPosition = PanelPos.Top;
         public int PanelHeight = 30;
@@ -66,22 +67,21 @@ namespace LightDE.UI
         public MainWindow()
         {
             InitializeComponent();
-            _client = new UIClient();
-
+            Init();
         }
         void Init()
         {
-            Config.Current = new Config(Directory.GetCurrentDirectory() + "\\Config", "config", ".json");
-            WindowManager wm = new WindowManager(AddNewTaskItem);
             _notifyiconmanager = new NotifyIconManager(AddNewNotification);
             SetPanelPos(PanelPosition);
-            new Thread(new ThreadStart(GetApps)).Start();
-
-           // Dispatcher.Invoke(() => SetTopMost());
+            //Dispatcher.Invoke(() => SetTopMost());
+            new DesktopD().Show();
+            new AppChooserWindow().Show();
+            ClockTimer.Elapsed += ClockTimer_Elapsed;
+            ClockTimer.Start();
         }
-        ~MainWindow()
+        private void ClockTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            new Settings.Settings().Show();
+            Dispatcher.Invoke(() => Clock.Header = DateTime.Now.ToString(_configClient.GetVar("TimeDateFormat")));
         }
 
         public void SetTopMost()
@@ -94,32 +94,6 @@ namespace LightDE.UI
             InteropHelper.SetWindowLong(wndHelper.Handle, (int)InteropHelper.GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
             _current = this;
         }
-        private GUIItem AddNewTaskItem(WinHandle window)
-        {
-            window.TitleChanged += Window_TitleChanged;
-            var g = new GUIItem();
-            Application.Current.Dispatcher.Invoke(() => {
-                try
-                {
-                    MenuItem s = new MenuItem();
-                    s.Click += (object sender, RoutedEventArgs e) => { window.MaximizeMinimize(); };
-                    s.Header = window.Title;
-                    s.Tag = window.Ptr.ToString();
-                    Image m = new Image();
-                    var handle = window.WindowIcon.ToBitmap().GetHbitmap();
-                    try
-                    {
-                        m.Source = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                        s.Icon = m;
-                    }
-                    finally { InteropHelper.DeleteObject(handle); }
-                    g.Destroy = () => { Application.Current.Dispatcher.Invoke(() => ProcMenu.Items.Remove(ProcMenu.Items.Cast<MenuItem>().Where(x => x.Tag == s.Tag).First())); };
-                    ProcMenu.Items.Add(s);
-                }
-                catch { }
-            });
-            return g;
-        }
 
         private GUIItem AddNewNotification(NOTIFYITEMICON icon)
         {
@@ -130,15 +104,6 @@ namespace LightDE.UI
                 g.Destroy = () => { Application.Current.Dispatcher.Invoke(() => NotifyiconHolder.Children.Remove(obj)); };
             });
             return g;
-        }
-
-        private void Window_TitleChanged(object sender, EventArgs e)
-        {
-            for (int i = 0; i < ProcMenu.Items.Count; i++)
-            {
-                var p = ProcMenu.Items[i] as MenuItem;
-                Dispatcher.Invoke(() => p.Header = GetTitle(int.Parse(p.Tag.ToString())));
-            }
         }
         public string GetTitle(int hwnd)
         {

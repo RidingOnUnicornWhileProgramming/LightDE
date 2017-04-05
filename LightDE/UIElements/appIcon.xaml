@@ -4,12 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LightDE">
-    <MenuItem x:Name="item">
-        <MenuItem.Header>
-            <StackPanel Orientation="Horizontal" MouseUp="run">
-                <Image x:Name="icon" Width="20" Height="20"></Image>
-                <Label x:Name="name"></Label>
-            </StackPanel>
-        </MenuItem.Header>
-    </MenuItem>
+    <StackPanel Orientation="Vertical" MouseUp="run">
+        <Image x:Name="icon" Width="20" Height="20"></Image>
+        <Label x:Name="name"></Label>
+    </StackPanel>
 </UserControl>

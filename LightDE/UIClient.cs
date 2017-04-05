@@ -17,7 +17,7 @@ namespace LightDE.UI
 
             Console.WriteLine("Started client.");
 
-            var rep = _client.Send("Initialized");
+            var rep = _client.Send("ConfigInitialized");
         }
         public string Request(string req)
         {

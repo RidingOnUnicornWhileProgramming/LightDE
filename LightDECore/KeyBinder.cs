@@ -1,6 +1,7 @@
 ﻿using Gma.UserActivityMonitor;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace LightDE.Core
 {
@@ -16,6 +17,7 @@ namespace LightDE.Core
         double vol;
         private void HookManager_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
         {
+            new Thread(new ThreadStart(() => {
             bool known = false;
             switch (e.KeyCode.ToString())
             {
@@ -70,6 +72,7 @@ namespace LightDE.Core
                     KeyManager.AppCommand(key.Code);
                 }
             }
+            })).Start();
         }
     }
     [System.Serializable]

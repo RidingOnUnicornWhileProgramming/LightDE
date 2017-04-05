@@ -20,7 +20,6 @@ using System.Net;
 using System.IO;
 using TNX.RssReader;
 using System.Diagnostics;
-using LightDE.Settings;
 using Newtonsoft.Json;
 using System.Threading;
 using GongSolutions.Wpf.DragDrop;
@@ -30,6 +29,7 @@ using LightDE.Core;
 using MaterialDesignThemes.Wpf;
 using System.Text.RegularExpressions;
 using System.Collections;
+using LightDE.UI;
 
 namespace LightDE.Desktop
 {
@@ -41,13 +41,6 @@ namespace LightDE.Desktop
     {
         WindowSinker ws;
         bool desktop;
-        public string name
-        {
-            get
-            {
-                return "DesktopD";
-            }
-        }
 
         public DesktopD()
         {
@@ -73,7 +66,7 @@ namespace LightDE.Desktop
             Background.Visibility = Visibility.Hidden;
             Welcome.Visibility = Visibility.Visible;
             Welcome.IsEnabled = true;
-            welcomeText.Content = "Welcome, " + Environment.UserName;// System.Security.Principal.WindowsIdentity.GetCurrent().Name.Split(new char[] { '\\' })[1];
+            welcomeText.Content = "Welcome, " + Environment.UserName;
         }
         public void AssignSize()
         {
@@ -90,7 +83,7 @@ namespace LightDE.Desktop
             try
             {
                 RssFeed rs;
-                foreach (string l in Config.Current.V1.DesktopD_RSS)
+                foreach (string l in JsonConvert.DeserializeObject<string[]>(MainWindow._current._configClient.GetVar("RSS")))
                 {
                     rs = RssHelper.ReadFeed(@l);
                     foreach (RssItem r in rs.Items)
@@ -106,7 +99,7 @@ namespace LightDE.Desktop
                             text.Text = r.Title;
                             text.FontSize = 16;
                             text.TextWrapping = TextWrapping.Wrap;
-                            text.FontFamily = new FontFamily(@"pack://application:,,,/MaterialDesignThemes.MahApps;component/Themes/MaterialDesignTheme.MahApps.Fonts.xaml");
+                            text.FontFamily = new FontFamily(@"pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto");
                             text.Height = 75;
                             text.Padding = new Thickness(5, 0, 5, 2);
                             Button b = new Button();
@@ -204,12 +197,12 @@ namespace LightDE.Desktop
         }
         public void SetWallpaper()
         {
-            if (Config.Current.V1.General_FirstRun)
+            if (MainWindow._current._configClient.GetVar("FirstRun") == "True")
             {
-                Config.Current.V1.DesktopD_WallpaperPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Desktop\Wallpaper.jpg");
-                Config.Current.V1.General_FirstRun = false;
+                MainWindow._current._configClient.SetVar("WallpaperPath", System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Desktop\Wallpaper.jpg"));
+                MainWindow._current._configClient.SetVar("FirstRun", "False");
             }
-            BitmapImage bm = new BitmapImage(new Uri(Config.Current.V1.DesktopD_WallpaperPath));
+            BitmapImage bm = new BitmapImage(new Uri(MainWindow._current._configClient.GetVar("WallpaperPath")));
             Background.Background = new ImageBrush(bm);
         }
 
@@ -234,35 +227,6 @@ namespace LightDE.Desktop
             Scopes.Visibility = desktop ? Visibility.Hidden : Visibility.Visible;
             DesktopView.Visibility = desktop ? Visibility.Visible : Visibility.Hidden;
         }
-
- private void DesktopItems_Drop(object sender, DragEventArgs e)
-        {
-           // var source = e.Data.GetData(typeof(Tile)) as Tile;
-           // var target = ((Tile)(sender)) as Tile;
-
-           // int sourceIndex = DesktopItems.Items.IndexOf(source);
-           // int targetIndex = DesktopItems.Items.IndexOf(target);
-           //
-//Move(source, sourceIndex, targetIndex);
-        }
-        private void Move(Tile source, int sourceIndex, int targetIndex)
-        {
-            //if (sourceIndex < targetIndex)
-           // {
-           //     DesktopItems.Items.Insert(targetIndex + 1, source);
-           //     DesktopItems.Items.RemoveAt(sourceIndex);
-           // }
-          //  else
-           // {
-           //     int removeIndex = sourceIndex + 1;
-            //    if (DesktopItems.Items.Count + 1 > removeIndex)
-            //    {
-             //       DesktopItems.Items.Insert(targetIndex, source);
-//DesktopItems.Items.RemoveAt(removeIndex);
-              //  }
-           // }
-        }
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             WindowInteropHelper wndHelper = new WindowInteropHelper(this);

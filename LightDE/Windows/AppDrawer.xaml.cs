@@ -10,26 +10,26 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LightDE.Config
+namespace LightDE.UI
 {
     /// <summary>
-    /// Interaction logic for Variable.xaml
+    /// Interaction logic for AppDrawer.xaml
     /// </summary>
-    public partial class Variable : UserControl
+    public partial class AppDrawer : Window
     {
-        public Variable(string varname, string var)
+        //TODO ADD SEARCHING FOR APPS AND MAKING ICON OUT OF IT
+
+        public AppDrawer()
         {
             InitializeComponent();
-
-            varName.Content = varname;
-            Var.Text = var;
         }
-        public void Save()
+
+        private void Window_MouseLeave(object sender, MouseEventArgs e)
         {
-            MainWindow.config.SetVar(varName.Content.ToString(), Var.Text);
+            this.Hide();
         }
     }
+    public class AppDrawerItem
 }

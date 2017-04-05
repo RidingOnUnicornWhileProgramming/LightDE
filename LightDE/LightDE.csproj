@@ -187,6 +187,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ConfigClient.cs" />
     <Compile Include="InteropHelper.cs" />
     <Compile Include="UIClient.cs" />
     <Compile Include="UIElements\appIcon.xaml.cs">
@@ -205,6 +206,9 @@
     </Compile>
     <Compile Include="Widgets\Performance.xaml.cs">
       <DependentUpon>Performance.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\AppChooserWindow.xaml.cs">
+      <DependentUpon>AppChooserWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="UIElements\appIcon.xaml">
       <SubType>Designer</SubType>
@@ -247,6 +251,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Widgets\Performance.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\AppChooserWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -27,16 +27,16 @@ namespace LightDE
         {
             InitializeComponent();
         }
-        public appIcon(string Name, Bitmap icon, string Path)
+        public appIcon(string Name, string icon, string Path)
         {
             InitializeComponent();
-            ImageSource s = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(icon.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            ImageSource s = new BitmapImage(new Uri(icon));
             this.icon.Source = s;
             this.name.Content = Name;
             this.Path = Path;
             this.Loaded += Icon_Loaded;
-            this.MouseLeftButtonUp += (object sender, MouseButtonEventArgs e) => { MessageBox.Show("Hi!");  Process.Start(Path); };
-            this.MouseUp += (object sender, MouseButtonEventArgs e) => { MessageBox.Show("Hi!"); Process.Start(Path); };
+            this.MouseLeftButtonUp += (object sender, MouseButtonEventArgs e) => { Process.Start(Path); };
+            this.MouseUp += (object sender, MouseButtonEventArgs e) => { Process.Start(Path); };
         }
 
 

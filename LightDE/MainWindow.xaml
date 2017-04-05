@@ -55,9 +55,8 @@
                 </MenuItem>
 
             </MenuItem>
-            <MenuItem Header="Windows" FontFamily="Roboto-Thin" Foreground="White" x:Name="ProcMenu" Width="155"  Height="30" />
         </Menu>
-        <Menu  Background="#212121" HorizontalAlignment="Right" Width="369">
+        <Menu  Background="#212121" HorizontalAlignment="Right" Width="369" Margin="0,0,116,0">
             <MenuItem Foreground="white" Width="67" Height="28"  Background="#212121">
                 <MenuItem.Header>
                     <StackPanel x:Name="SoundPanel"  Width="25" Orientation="Horizontal" FlowDirection="LeftToRight" Margin="10,0,-17,0">
@@ -101,6 +100,6 @@
             </MenuItem>
             <System:String xml:space="preserve"> k"/&gt;</System:String>
         </Menu>
-        <StackPanel x:Name="NotifyiconHolder" Orientation="Horizontal" HorizontalAlignment="Right" Width="116"/>
+        <StackPanel x:Name="NotifyiconHolder" Orientation="Horizontal" HorizontalAlignment="Right" Width="111"/>
     </Grid>
 </Window>

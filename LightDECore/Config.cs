@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace LightDE.Core
 {
@@ -31,6 +32,7 @@ namespace LightDE.Core
             {
                 vars.Add(key, var); 
             }
+            Serialize();
         }
         public string GetVar(string key)
         {
