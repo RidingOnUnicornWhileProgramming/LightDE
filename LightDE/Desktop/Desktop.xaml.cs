@@ -80,8 +80,10 @@ namespace LightDE.Desktop
         }
         public void FetchRssFeed()
         {
+            new Thread(new ThreadStart(() => {
             try
             {
+
                 if (MainWindow._current._configClient.GetVar("FirstRun") == "True")
                 {
                     MainWindow._current._configClient.SetVar("RSS", JsonConvert.SerializeObject(new string[] { "https://www.cnet.com/rss/news/", "https://www.cnet.com/rss/reviews/" }));
@@ -129,6 +131,7 @@ namespace LightDE.Desktop
             {
                 // shall we repeat the code above or what?
             }
+            })).Start();
         }
         public void GetRecentFiles()
         {

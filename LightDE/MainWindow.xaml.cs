@@ -74,6 +74,7 @@ namespace LightDE.UI
         }
         void Init()
         {
+            Console.WriteLine("Started Init...");
             _current = this;
 
             _notifyiconmanager = new NotifyIconManager(AddNewNotification);
@@ -87,6 +88,10 @@ namespace LightDE.UI
             ClockTimer.Start();
             d.InitializeDesktop();
             _drawer = new AppDrawer();
+            menu.ContextMenu = new ContextMenu();
+            menu.ContextMenu.Items.Add(new MenuItem() { Header = "Choose apps" });
+            var s = menu.ContextMenu.Items[0] as MenuItem;
+            s.Click += (object sender, RoutedEventArgs e) => { new AppChooserWindow(); };
         }
         private void ClockTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
