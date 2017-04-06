@@ -3,9 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:LightDE">
-    <StackPanel Orientation="Vertical" MouseUp="run">
-        <Image x:Name="icon" Width="20" Height="20"></Image>
-        <Label x:Name="name"></Label>
+             xmlns:local="clr-namespace:LightDE"
+             FontFamily="{StaticResource MaterialDesignFont}" >
+    <StackPanel Orientation="Vertical" MouseUp="run" Width="100" Height="100">
+        <Separator Height="5" Background="Transparent" Foreground="Transparent"/>
+        <Image x:Name="icon" Height="60" Width="60"/>
+        <Label x:Name="name" Height="31" FontSize="16"/>
+
     </StackPanel>
 </UserControl>

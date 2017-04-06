@@ -35,8 +35,6 @@ namespace LightDE
             this.name.Content = Name;
             this.Path = Path;
             this.Loaded += Icon_Loaded;
-            this.MouseLeftButtonUp += (object sender, MouseButtonEventArgs e) => { Process.Start(Path); };
-            this.MouseUp += (object sender, MouseButtonEventArgs e) => { Process.Start(Path); };
         }
 
 
@@ -45,7 +43,11 @@ namespace LightDE
             
         }
 
-        private void run(object sender, MouseButtonEventArgs e)
+        public void run(object sender, MouseButtonEventArgs e)
+        {
+            Run();
+        }
+        public void Run()
         {
             try
             {

@@ -33,7 +33,7 @@
                         <Separator/>
                     </StackPanel>
                 </materialDesign:PopupBox>
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22">Choose Apps</TextBlock>
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="22">Choose Apps</TextBlock>
             </DockPanel>
         </materialDesign:ColorZone>
         <ListBox x:Name="Apps" SelectionMode="Multiple" Margin="0,71,0,0">

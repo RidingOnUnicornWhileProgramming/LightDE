@@ -57,6 +57,7 @@ namespace LightDE.UI
     {        
         private NotifyIconManager _notifyiconmanager; // keep alive callbacks
         internal UIClient _client = new UIClient();
+        AppDrawer _drawer ;
         internal ConfigClient _configClient = new ConfigClient();
         CoreAudioDevice defaultPlaybackDevice = new CoreAudioController().DefaultPlaybackDevice;
         public PanelPos PanelPosition = PanelPos.Top;
@@ -64,20 +65,28 @@ namespace LightDE.UI
         public int PanelWidth = (int)System.Windows.SystemParameters.PrimaryScreenWidth;
         public System.Timers.Timer ClockTimer = new System.Timers.Timer(1000);
         public static MainWindow _current;
+        bool shown = false;
         public MainWindow()
         {
             InitializeComponent();
+
             Init();
         }
         void Init()
         {
+            _current = this;
+
             _notifyiconmanager = new NotifyIconManager(AddNewNotification);
             SetPanelPos(PanelPosition);
             //Dispatcher.Invoke(() => SetTopMost());
-            new DesktopD().Show();
-            new AppChooserWindow().Show();
+            //_drawer = new AppDrawer();
+            DesktopD d = new DesktopD();
+
+            d.Show();
             ClockTimer.Elapsed += ClockTimer_Elapsed;
             ClockTimer.Start();
+            d.InitializeDesktop();
+            _drawer = new AppDrawer();
         }
         private void ClockTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
@@ -262,6 +271,19 @@ namespace LightDE.UI
         private void Lock(object sender, RoutedEventArgs e)
         {
             InteropHelper.LockWorkStation();
+        }
+
+        private void menu_Click(object sender, RoutedEventArgs e)
+        {
+            shown = !shown;
+            if (shown)
+            {
+                _drawer.Show();
+            }
+            else
+            {
+                _drawer.Hide();
+            }
         }
     }
     public enum PanelPos

@@ -187,6 +187,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Windows\AppDrawer.xaml.cs">
+      <DependentUpon>AppDrawer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ConfigClient.cs" />
     <Compile Include="InteropHelper.cs" />
     <Compile Include="UIClient.cs" />
@@ -210,6 +213,10 @@
     <Compile Include="Windows\AppChooserWindow.xaml.cs">
       <DependentUpon>AppChooserWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Windows\AppDrawer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UIElements\appIcon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

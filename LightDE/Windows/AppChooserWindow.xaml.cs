@@ -40,7 +40,7 @@ namespace LightDE.UI.Windows
                     using (Stream stream = File.OpenRead(a))
                         file.Load(stream);
 
-                    Dispatcher.Invoke(() => Apps.Items.Add(new ListBoxItem() { Content = file.Sections[0].Keys["name"].Value, IsSelected = File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\LightDE" + "\\Apps\\Menu\\" + file.Sections[0].Keys["name"].Value + ".app") }));
+                    Dispatcher.Invoke(() => Apps.Items.Add(new ListBoxItem() { Content = file.Sections[0].Keys["name"].Value, FontSize= 16, Padding = new Thickness(0, 8, 0, 8),  IsSelected = File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\LightDE" + "\\Apps\\Menu\\" + file.Sections[0].Keys["name"].Value + ".app") }));
 
                 }
                 catch (Exception ex) { Console.WriteLine(ex.ToString()); }

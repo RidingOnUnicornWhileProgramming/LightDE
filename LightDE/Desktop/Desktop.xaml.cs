@@ -82,6 +82,10 @@ namespace LightDE.Desktop
         {
             try
             {
+                if (MainWindow._current._configClient.GetVar("FirstRun") == "True")
+                {
+                    MainWindow._current._configClient.SetVar("RSS", JsonConvert.SerializeObject(new string[] { "https://www.cnet.com/rss/news/", "https://www.cnet.com/rss/reviews/" }));
+                }
                 RssFeed rs;
                 foreach (string l in JsonConvert.DeserializeObject<string[]>(MainWindow._current._configClient.GetVar("RSS")))
                 {
@@ -163,9 +167,11 @@ namespace LightDE.Desktop
         public void InitializeDesktop()
         {
             Background.Visibility = Visibility.Visible;
+            MainWindow._current._configClient.SetVar("RSS", JsonConvert.SerializeObject(new string[] { "https://www.cnet.com/rss/news/", "https://www.cnet.com/rss/reviews/" }));
 
-             Welcome.Visibility = Visibility.Hidden;
+            Welcome.Visibility = Visibility.Hidden;
              Welcome.IsEnabled = false;
+            FetchRssFeed();
                 SetWallpaper();
             AssignSize();
             ws.Sink();
