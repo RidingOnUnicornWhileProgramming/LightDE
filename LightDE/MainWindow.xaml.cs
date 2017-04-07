@@ -88,10 +88,7 @@ namespace LightDE.UI
             ClockTimer.Start();
             d.InitializeDesktop();
             _drawer = new AppDrawer();
-            menu.ContextMenu = new ContextMenu();
-            menu.ContextMenu.Items.Add(new MenuItem() { Header = "Choose apps" });
-            var s = menu.ContextMenu.Items[0] as MenuItem;
-            s.Click += (object sender, RoutedEventArgs e) => { new AppChooserWindow(); };
+            
         }
         private void ClockTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
@@ -289,6 +286,11 @@ namespace LightDE.UI
             {
                 _drawer.Hide();
             }
+        }
+
+        private void MenuItem_Click_5(object sender, RoutedEventArgs e)
+        {
+            new AppChooserWindow().Show();
         }
     }
     public enum PanelPos

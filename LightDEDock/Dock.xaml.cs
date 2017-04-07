@@ -97,9 +97,12 @@ namespace LightDE
                         }
                         finally { InteropHelper.DeleteObject(handle); }
                         s.Children.Add(l);
-
-                        g.Destroy = () => { Application.Current.Dispatcher.Invoke(() => ProcMenu.Children.Remove(ProcMenu.Children.Cast<StackPanel>().Where(x => x.Tag == s.Tag).First())); };
-                        ProcMenu.Children.Add(s);
+                        s.Height = 60;
+                        g.Destroy = () => { Application.Current.Dispatcher.Invoke(() => { Left += s.Width; ProcMenu.Width -= s.Width; ProcMenu.Items.Remove(ProcMenu.Items.Cast<StackPanel>().Where(x => x.Tag == s.Tag).First());  }); };
+                        ProcMenu.Items.Add(s);
+                        ProcMenu.Width += s.Width;
+                        Left -= s.Width;
+                        Width = ProcMenu.Width; 
                     }
                     catch { }
                 });
@@ -111,9 +114,9 @@ namespace LightDE
             Dispatcher.Invoke(
                 ()=>
                 {
-                    for (int i = 0; i < ProcMenu.Children.Count; i++)
+                    for (int i = 0; i < ProcMenu.Items.Count; i++)
                     {
-                        var p = ProcMenu.Children[i] as StackPanel;
+                        var p = ProcMenu.Items[i] as StackPanel;
                         Dispatcher.Invoke(() => { var l = p.Children[1] as Label; l.Content = GetTitle(int.Parse(p.Tag.ToString())); });
                     }
                 });

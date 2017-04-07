@@ -24,6 +24,7 @@ namespace LightDEDock
         {
             LightDE.Dock d = new LightDE.Dock();
             d.Show();
+            Close();
         }
     }
 }

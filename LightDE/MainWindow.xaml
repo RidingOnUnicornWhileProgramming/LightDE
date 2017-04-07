@@ -18,7 +18,13 @@
 
 
         <Menu HorizontalAlignment="Left" x:Name="LeftMenu"  Background="#212121">
-            <MenuItem x:Name="menu" Foreground="White" VerticalContentAlignment="Top"  Header="Apps" FontFamily="Roboto-Thin" Height="30" Width="155"  Background="#212121" Click="menu_Click"/>
+            <MenuItem x:Name="menu" Foreground="White" VerticalContentAlignment="Top"  Header="Apps" FontFamily="Roboto-Thin" Height="30" Width="155"  Background="#212121" Click="menu_Click">
+                <MenuItem.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Choose Apps" Click="MenuItem_Click_5"/>
+                    </ContextMenu>
+                </MenuItem.ContextMenu>
+            </MenuItem>
             <MenuItem x:Name="places" Foreground="White" Header="Places" FontFamily="Roboto-Thin" Height="30" Width="155"  Background="#212121">
                 <MenuItem.RenderTransform>
                     <TransformGroup>

@@ -308,6 +308,7 @@
     <Resource Include="Resources\Entypo-license.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="WindowManagement.dll" />
     <Resource Include="Resources\22377.png" />
     <Content Include="Cairo.WindowsHooks.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

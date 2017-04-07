@@ -11,13 +11,6 @@ namespace LightDEDock
     {
         internal DockClient()
         {
-            var c = new IpcClient();
-            c.Initialize(12345);
-
-            Console.WriteLine("Started client.");
-
-            var rep = c.Send("Hello");
-            Console.WriteLine("Received: " + rep);
         }
     }
 }
