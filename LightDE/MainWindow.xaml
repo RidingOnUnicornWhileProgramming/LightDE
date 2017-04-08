@@ -62,7 +62,7 @@
 
             </MenuItem>
         </Menu>
-        <Menu  Background="#212121" HorizontalAlignment="Right" Width="369" Margin="0,0,116,0">
+        <Menu  Background="#212121" HorizontalAlignment="Right" Width="369" Margin="0,0,144,0">
             <MenuItem Foreground="white" Width="67" Height="28"  Background="#212121">
                 <MenuItem.Header>
                     <StackPanel x:Name="SoundPanel"  Width="25" Orientation="Horizontal" FlowDirection="LeftToRight" Margin="10,0,-17,0">
@@ -83,8 +83,8 @@
                     </Button>
                 </StackPanel>
             </MenuItem>
-            <MenuItem  x:Name="Clock"  Background="#212121" MouseLeftButtonUp="Clock_MouseLeftButtonUp" Header="dddd" Foreground="White"  FontFamily="Roboto-Thin" FontSize="15" Height="28"/>
-            <MenuItem x:Name="usermenu" Foreground="White"  Background="#212121" Header="Power" FontFamily="Roboto-Thin" Height="28" Width="182" VerticalContentAlignment="Center">
+            <MenuItem  x:Name="Clock"  Background="#212121" MouseLeftButtonUp="Clock_MouseLeftButtonUp" Header="dddd" Foreground="White"  FontFamily="Roboto-Thin" FontSize="15" Height="28" Width="134"/>
+            <MenuItem x:Name="usermenu" Foreground="White"  Background="#212121" Header="Power" FontFamily="Roboto-Thin" Height="28" Width="159" VerticalContentAlignment="Center" HorizontalAlignment="Right">
                 <MenuItem.Icon>
                     <iconPacks:PackIconMaterial Kind="Account" VerticalAlignment="Center" HorizontalAlignment="Center" />
                 </MenuItem.Icon>
@@ -106,6 +106,9 @@
             </MenuItem>
             <System:String xml:space="preserve"> k"/&gt;</System:String>
         </Menu>
-        <StackPanel x:Name="NotifyiconHolder" Orientation="Horizontal" HorizontalAlignment="Right" Width="111"/>
+        <StackPanel x:Name="NotifyiconHolder" Orientation="Horizontal" HorizontalAlignment="Right" Width="108" Margin="0,0,31,0"/>
+        <Button Height="Auto" Background="Transparent" Foreground="White" BorderBrush="Transparent" HorizontalAlignment="Right" HorizontalContentAlignment="Center" Width="30" Click="OpenBar">
+            <iconPacks:PackIconMaterial Kind="Lock" VerticalAlignment="Center" HorizontalAlignment="Center" Height="18" Width="18" />
+        </Button>
     </Grid>
 </Window>

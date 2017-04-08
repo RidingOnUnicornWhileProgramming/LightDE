@@ -292,6 +292,11 @@ namespace LightDE.UI
         {
             new AppChooserWindow().Show();
         }
+
+        private void OpenBar(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
     public enum PanelPos
     {

@@ -17,8 +17,13 @@ namespace LightDE.Core
         public static extern IntPtr SendMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
-        public static extern int GetWindowText(int hWnd, StringBuilder title, int size);
+        public static extern bool CloseWindow(IntPtr hWnd);
 
+        [DllImport("user32.dll")]
+        public static extern int GetWindowText(int hWnd, StringBuilder title, int size);
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsIconic(IntPtr hWnd);
         public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
         public const UInt32 SWP_NOSIZE = 0x0001;
         public const UInt32 SWP_NOMOVE = 0x0002;

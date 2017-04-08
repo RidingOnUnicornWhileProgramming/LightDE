@@ -31,6 +31,10 @@ namespace LightDE
             Left = System.Windows.SystemParameters.PrimaryScreenWidth / 2 - Width/2;
             
             Top = System.Windows.SystemParameters.PrimaryScreenHeight - 50;
+            animationshow.From = System.Windows.SystemParameters.PrimaryScreenHeight - 10;
+            animationshow.To = System.Windows.SystemParameters.PrimaryScreenHeight - 50;
+            animationclose.From = System.Windows.SystemParameters.PrimaryScreenHeight - 50;
+            animationclose.To = System.Windows.SystemParameters.PrimaryScreenHeight - 10;
             Topmost = true;
             MouseLeave += Dock_MouseLeave;
             MouseEnter += Dock_MouseEnter;
@@ -38,7 +42,10 @@ namespace LightDE
             {
                 WindowManager wm = new WindowManager(AddNewTaskItem);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
             new Thread(new ThreadStart(() =>
             {
                 Thread.Sleep(2000);
@@ -50,9 +57,29 @@ namespace LightDE
         private void Dock_MouseEnter(object sender, MouseEventArgs e)
         {
             Console.WriteLine("Mouse Enter");
-            Top = System.Windows.SystemParameters.PrimaryScreenHeight - 50;
+            RefreshTasks();
         }
+        void RefreshTasks()
+        {
+            for (int i = 0; i < ProcMenu.Items.Count; i++)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    var h = ProcMenu.Items[i] as ListBoxItem;
+                    var p = h.Content as StackPanel;
+                    var l = p.Children[1] as Label; l.Content = GetTitle(int.Parse(p.Tag.ToString()));
+                    if (!InteropHelper.IsIconic((IntPtr)int.Parse(p.Tag.ToString())))
+                    {
+                        h.Background = new SolidColorBrush(new Color() { R = Colors.LightGray.R, G = Colors.LightGray.G, B = Colors.LightGray.B, A = 50 }   );
+                    }
+                    else
+                    {
+                        h.Background = new SolidColorBrush(Colors.Transparent);
 
+                    }
+                });
+            }
+        }
         private void Dock_MouseLeave(object sender, MouseEventArgs e)
         {
             Console.WriteLine("Mouse leave");
@@ -61,6 +88,7 @@ namespace LightDE
                     Thread.Sleep(2000);
                     Dispatcher.Invoke(() => Top = System.Windows.SystemParameters.PrimaryScreenHeight - 10);
                 })).Start();
+            RefreshTasks();
         }
 
         public void Appear()
@@ -69,42 +97,62 @@ namespace LightDE
             Left = System.Windows.SystemParameters.PrimaryScreenWidth / 2 - Width / 2;
 
             Top = System.Windows.SystemParameters.PrimaryScreenHeight - 40;
+           
         }
         private GUIItem AddNewTaskItem(WinHandle window)
         {
-                window.TitleChanged += Window_TitleChanged;
+                //window.TitleChanged += Window_TitleChanged;
                 var g = new GUIItem();
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     try
                     {
                         StackPanel s = new StackPanel();
-                        s.MouseLeftButtonUp += (object sender, MouseButtonEventArgs e) => { window.MaximizeMinimize(); };
+                        ListBoxItem holder = new ListBoxItem();
+                        holder.Focusable = false;
+                        s.Tag = window.Ptr.ToString();
+
+                        holder.MouseLeftButtonUp += (object sender, MouseButtonEventArgs e) =>
+                        {
+                            RefreshTasks();
+                            window.MaximizeMinimize();
+                        };
+                        ContextMenu o = new ContextMenu();
+                        var h = new MenuItem() { Header = "Close" };
+                        h.Click += (object sender, RoutedEventArgs e) => { InteropHelper.CloseWindow((IntPtr)int.Parse(s.Tag.ToString())); };
+                        o.Items.Add(h);
+                        s.ContextMenu = o;
                         Label l = new Label();
                         l.Content = window.Title;
-                        s.Width = 40;
+                        s.Width = 60;
                         l.Foreground = new SolidColorBrush(Colors.White);
                         l.FontSize = 10;
-                        s.Tag = window.Ptr.ToString();
                         Image m = new Image();
                         var handle = window.WindowIcon.ToBitmap().GetHbitmap();
                         try
                         {
                             m.Source = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                            m.Width = 30;
-                            m.Height = 30;
+                            m.Width = 25;
+                            m.Height = 25;
                             s.Children.Add(m);
                         }
                         finally { InteropHelper.DeleteObject(handle); }
                         s.Children.Add(l);
                         s.Height = 60;
-                        g.Destroy = () => { Application.Current.Dispatcher.Invoke(() => { Left += s.Width; ProcMenu.Width -= s.Width; ProcMenu.Items.Remove(ProcMenu.Items.Cast<StackPanel>().Where(x => x.Tag == s.Tag).First());  }); };
-                        ProcMenu.Items.Add(s);
+                        g.Destroy = () => { Application.Current.Dispatcher.Invoke(() => { Left += s.Width; ProcMenu.Width -= s.Width; ProcMenu.Items.Remove(ProcMenu.Items.Cast<StackPanel>().Where(x => x.Tag == s.Tag).First()); }); };
+                        holder.Content = s;
+                        RefreshTasks();
+                        ProcMenu.Items.Add(holder);
+                        Console.WriteLine("Added");
                         ProcMenu.Width += s.Width;
                         Left -= s.Width;
-                        Width = ProcMenu.Width; 
+                        Width = ProcMenu.Width;
                     }
-                    catch { }
+                    catch
+                    (Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                    }
                 });
                 return g;
         }
@@ -116,8 +164,7 @@ namespace LightDE
                 {
                     for (int i = 0; i < ProcMenu.Items.Count; i++)
                     {
-                        var p = ProcMenu.Items[i] as StackPanel;
-                        Dispatcher.Invoke(() => { var l = p.Children[1] as Label; l.Content = GetTitle(int.Parse(p.Tag.ToString())); });
+                        RefreshTasks();
                     }
                 });
         }
@@ -137,6 +184,11 @@ namespace LightDE
 
             exStyle |= (int)InteropHelper.ExtendedWindowStyles.WS_EX_TOOLWINDOW;
             InteropHelper.SetWindowLong(wndHelper.Handle, (int)InteropHelper.GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
+        }
+
+        private void ProcMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            
         }
     }
 }
