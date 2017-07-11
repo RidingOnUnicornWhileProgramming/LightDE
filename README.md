@@ -19,3 +19,6 @@ It's rather a call to Microsoft about how we see the future of Windows:
 Customizing your os from the Bottom to the Top. 
 So, If any Microsoft developer ever will read it, this is our note: Make customizing Windows more available! No icon packs, No explorer theming?! If you guys will continue to stagnate, Linux is gonna kill you...
 
+
+ # Join the team 
+ Do you want to collaborate? Join the project at https://crowdforge.io/projects/260
