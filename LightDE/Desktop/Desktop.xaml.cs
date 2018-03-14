@@ -84,12 +84,12 @@ namespace LightDE.Desktop
             try
             {
 
-                if (MainWindow._current._configClient.GetVar("FirstRun") == "True")
+                if (Core.Config._current.GetVar("FirstRun") == "True")
                 {
-                    MainWindow._current._configClient.SetVar("RSS", JsonConvert.SerializeObject(new string[] { "https://www.cnet.com/rss/news/", "https://www.cnet.com/rss/reviews/" }));
+                    Core.Config._current.SetVar("RSS", JsonConvert.SerializeObject(new string[] { "https://www.cnet.com/rss/news/", "https://www.cnet.com/rss/reviews/" }));
                 }
                 RssFeed rs;
-                foreach (string l in JsonConvert.DeserializeObject<string[]>(MainWindow._current._configClient.GetVar("RSS")))
+                foreach (string l in JsonConvert.DeserializeObject<string[]>(Core.Config._current.GetVar("RSS")))
                 {
                     rs = RssHelper.ReadFeed(@l);
                     foreach (RssItem r in rs.Items)
@@ -170,7 +170,7 @@ namespace LightDE.Desktop
         public void InitializeDesktop()
         {
             Background.Visibility = Visibility.Visible;
-            MainWindow._current._configClient.SetVar("RSS", JsonConvert.SerializeObject(new string[] { "https://www.cnet.com/rss/news/", "https://www.cnet.com/rss/reviews/" }));
+            Core.Config._current.SetVar("RSS", JsonConvert.SerializeObject(new string[] { "https://www.cnet.com/rss/news/", "https://www.cnet.com/rss/reviews/" }));
 
             Welcome.Visibility = Visibility.Hidden;
              Welcome.IsEnabled = false;
@@ -206,12 +206,12 @@ namespace LightDE.Desktop
         }
         public void SetWallpaper()
         {
-            if (MainWindow._current._configClient.GetVar("FirstRun") == "True")
+            if (Core.Config._current.GetVar("FirstRun") == "True")
             {
-                MainWindow._current._configClient.SetVar("WallpaperPath", System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Desktop\Wallpaper.jpg"));
-                MainWindow._current._configClient.SetVar("FirstRun", "False");
+                Core.Config._current.SetVar("WallpaperPath", System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Desktop\Wallpaper.jpg"));
+                Core.Config._current.SetVar("FirstRun", "False");
             }
-            BitmapImage bm = new BitmapImage(new Uri(MainWindow._current._configClient.GetVar("WallpaperPath")));
+            BitmapImage bm = new BitmapImage(new Uri(Core.Config._current.GetVar("WallpaperPath")));
             Background.Background = new ImageBrush(bm);
         }
 

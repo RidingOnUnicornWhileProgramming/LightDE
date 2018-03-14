@@ -62,7 +62,7 @@
 
             </MenuItem>
         </Menu>
-        <Menu  Background="#212121" HorizontalAlignment="Right" Width="369" Margin="0,0,144,0">
+        <Menu  Background="#212121" HorizontalAlignment="Right" Width="229" Margin="0,0,191,0">
             <MenuItem Foreground="white" Width="67" Height="28"  Background="#212121">
                 <MenuItem.Header>
                     <StackPanel x:Name="SoundPanel"  Width="25" Orientation="Horizontal" FlowDirection="LeftToRight" Margin="10,0,-17,0">
@@ -84,26 +84,6 @@
                 </StackPanel>
             </MenuItem>
             <MenuItem  x:Name="Clock"  Background="#212121" MouseLeftButtonUp="Clock_MouseLeftButtonUp" Header="dddd" Foreground="White"  FontFamily="Roboto-Thin" FontSize="15" Height="28" Width="134"/>
-            <MenuItem x:Name="usermenu" Foreground="White"  Background="#212121" Header="Power" FontFamily="Roboto-Thin" Height="28" Width="159" VerticalContentAlignment="Center" HorizontalAlignment="Right">
-                <MenuItem.Icon>
-                    <iconPacks:PackIconMaterial Kind="Account" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                </MenuItem.Icon>
-                <MenuItem Header="Shutdown" Click="Shutdown" >
-                    <MenuItem.Icon>
-                        <iconPacks:PackIconMaterial Kind="Power" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Logout" Click="Logout">
-                    <MenuItem.Icon>
-                        <iconPacks:PackIconMaterial Kind="Logout" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Lock" Click="Lock">
-                    <MenuItem.Icon>
-                        <iconPacks:PackIconMaterial Kind="Lock" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </MenuItem.Icon>
-                </MenuItem>
-            </MenuItem>
             <System:String xml:space="preserve"> k"/&gt;</System:String>
         </Menu>
         <StackPanel x:Name="NotifyiconHolder" Orientation="Horizontal" HorizontalAlignment="Right" Width="108" Margin="0,0,31,0"/>

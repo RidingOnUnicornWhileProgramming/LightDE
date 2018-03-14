@@ -187,12 +187,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Core\AppFetcher.cs" />
+    <Compile Include="Core\AudioManager.cs" />
+    <Compile Include="Core\Config.cs" />
+    <Compile Include="Dock\Dock.xaml.cs">
+      <DependentUpon>Dock.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\KeyBinder.cs" />
+    <Compile Include="Core\KeyManager.cs" />
     <Compile Include="Windows\AppDrawer.xaml.cs">
       <DependentUpon>AppDrawer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ConfigClient.cs" />
     <Compile Include="InteropHelper.cs" />
-    <Compile Include="UIClient.cs" />
     <Compile Include="UIElements\appIcon.xaml.cs">
       <DependentUpon>appIcon.xaml</DependentUpon>
     </Compile>
@@ -213,6 +219,10 @@
     <Compile Include="Windows\AppChooserWindow.xaml.cs">
       <DependentUpon>AppChooserWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Dock\Dock.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Windows\AppDrawer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

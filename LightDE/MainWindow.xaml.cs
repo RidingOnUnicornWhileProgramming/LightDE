@@ -43,7 +43,6 @@ using System.Collections.ObjectModel;
 using LightDE.Core;
 using System.IO;
 using LightDE.UI;
-using LightDE.Config;
 using LightDE.UI.Windows;
 
 namespace LightDE.UI
@@ -56,12 +55,13 @@ namespace LightDE.UI
     public partial class MainWindow : Window
     {        
         private NotifyIconManager _notifyiconmanager; // keep alive callbacks
-        internal UIClient _client = new UIClient();
         AppDrawer _drawer ;
-        internal ConfigClient _configClient = new ConfigClient();
-        CoreAudioDevice defaultPlaybackDevice = new CoreAudioController().DefaultPlaybackDevice;
+
+        private AppFetcher _Fetcher = new AppFetcher();
+        public CoreAudioDevice defaultPlaybackDevice = new CoreAudioController().DefaultPlaybackDevice;
         public PanelPos PanelPosition = PanelPos.Top;
         public int PanelHeight = 30;
+        public Core.Config _config = new Core.Config();
         public int PanelWidth = (int)System.Windows.SystemParameters.PrimaryScreenWidth;
         public System.Timers.Timer ClockTimer = new System.Timers.Timer(1000);
         public static MainWindow _current;
@@ -76,13 +76,14 @@ namespace LightDE.UI
         {
             Console.WriteLine("Started Init...");
             _current = this;
-
+            _Fetcher.GenerateFiles(false);
             _notifyiconmanager = new NotifyIconManager(AddNewNotification);
             SetPanelPos(PanelPosition);
             //Dispatcher.Invoke(() => SetTopMost());
             //_drawer = new AppDrawer();
             DesktopD d = new DesktopD();
-
+            Dock dd = new Dock();
+            dd.Show();
             d.Show();
             ClockTimer.Elapsed += ClockTimer_Elapsed;
             ClockTimer.Start();
@@ -92,7 +93,7 @@ namespace LightDE.UI
         }
         private void ClockTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            Dispatcher.Invoke(() => Clock.Header = DateTime.Now.ToString(_configClient.GetVar("TimeDateFormat")));
+            Dispatcher.Invoke(() => Clock.Header = DateTime.Now.ToString(Core.Config._current.GetVar("TimeDateFormat")));
         }
 
         public void SetTopMost()
@@ -227,19 +228,19 @@ namespace LightDE.UI
         }
         private void BackWard(object sender, RoutedEventArgs e)
         {
-            _client.Request("Prev");
+            KeyManager.AppCommand(KeyManager.AppComandCode.MEDIA_PREVIOUSTRACK);
 
         }
 
         private void PlayPause(object sender, RoutedEventArgs e)
         {
-            _client.Request("PlayPause");
+            KeyManager.AppCommand(KeyManager.AppComandCode.MEDIA_PLAY_PAUSE);
 
         }
 
         private void Forward(object sender, RoutedEventArgs e)
         {
-            _client.Request("Next");
+            KeyManager.AppCommand(KeyManager.AppComandCode.MEDIA_NEXTTRACK);
         }
 
         private void Window_StateChanged(object sender, EventArgs e)
