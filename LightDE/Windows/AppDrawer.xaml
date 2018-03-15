@@ -34,39 +34,25 @@
         </ResourceDictionary>
     </Window.Resources>
 
-        <Grid>
-        
-        <materialDesign:ColorZone Padding="16" materialDesign:ShadowAssist.ShadowDepth="Depth2"
-                                            Mode="PrimaryMid" DockPanel.Dock="Top">
-            <DockPanel>
-                <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" IsChecked="False"
-                                        x:Name="MenuToggleButton"/>
-                <TextBox Width="300" x:Name="SearchBox" Height="31"></TextBox>
-
-            </DockPanel>
-        </materialDesign:ColorZone>
-        <ListBox HorizontalContentAlignment="Center" x:Name="Items"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,90,0,0" SelectionMode="Single" >
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="201*"></ColumnDefinition>
+            <ColumnDefinition Width="718*"/>
+        </Grid.ColumnDefinitions>
+        <ListBox HorizontalContentAlignment="Center" x:Name="Items"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionMode="Single" Grid.Column="1" >
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
         </ListBox>
-        <materialDesign:DialogHost Identifier="RootDialog">
-            <materialDesign:DrawerHost x:Name="drawer"  IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
-                <materialDesign:DrawerHost.LeftDrawerContent>
-                    <DockPanel MinWidth="212">
-                        <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" 
-                                    DockPanel.Dock="Top"
-                                    HorizontalAlignment="Right" Margin="16"
-                                    IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}" />
-                        <ListBox x:Name="DemoItemsListBox" Margin="0 16 0 16" SelectedIndex="0">
-                            <ListBoxItem Padding="0, 8, 0, 8" x:Name="Apps" MouseDown="Apps_MouseDown" MouseLeftButtonUp="Apps_MouseDown" Content="Apps" FontSize="16"/>
-                            <ListBoxItem Padding="0, 8, 0, 8" x:Name="Documents" MouseDown="Documents_MouseDown" Content="Documents" FontSize="16"/>
-                        </ListBox>
-                    </DockPanel>
-                </materialDesign:DrawerHost.LeftDrawerContent>
-            </materialDesign:DrawerHost>
-        </materialDesign:DialogHost>
+        <ListBox HorizontalContentAlignment="Center" x:Name="SideMenu"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionMode="Single" Background="#FF0080FF" >
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+        </ListBox>
+
     </Grid>
 </Window>

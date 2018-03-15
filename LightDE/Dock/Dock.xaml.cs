@@ -138,7 +138,7 @@ namespace LightDE
                         finally { InteropHelper.DeleteObject(handle); }
                         s.Children.Add(l);
                         s.Height = 60;
-                        g.Destroy = () => { Application.Current.Dispatcher.Invoke(() => { Left += s.Width; ProcMenu.Width -= s.Width; ProcMenu.Items.Remove(ProcMenu.Items.Cast<StackPanel>().Where(x => x.Tag == s.Tag).First()); }); };
+                        g.Destroy = () => { Application.Current.Dispatcher.Invoke(() => { Left += s.Width; ProcMenu.Width -= s.Width; ProcMenu.Items.Remove(ProcMenu.Items.OfType<ListBoxItem>().Where(x => x.Tag == s.Tag).First()); }); };
                         holder.Content = s;
                         RefreshTasks();
                         ProcMenu.Items.Add(holder);

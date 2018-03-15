@@ -54,7 +54,7 @@ namespace LightDE.UI
                 catch (Exception ex) { Console.WriteLine(ex.ToString()); }
 
             });
-            Dispatcher.Invoke(() => drawer.IsLeftDrawerOpen = false);
+      
 
         }
         /* public void FillLastUsed()
@@ -79,7 +79,7 @@ namespace LightDE.UI
         private void Apps_MouseDown(object sender, MouseButtonEventArgs e)
         {
             new Thread(new ThreadStart(Fill)).Start();
-            drawer.IsLeftDrawerOpen = false;
+          
         }
 
         private void Documents_MouseDown(object sender, MouseButtonEventArgs e)
